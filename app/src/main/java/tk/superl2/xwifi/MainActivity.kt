@@ -4,13 +4,14 @@ import android.app.Activity
 import android.os.Bundle
 import android.util.Log
 import android.widget.Button
+import android.widget.Toast
 
 const val TAG = "MainActivity"
 
 class MainActivity: Activity() {
     // This variable holds an ArrayList of WifiEntry objects that each contain a saved wifi SSID and
     // password. It is updated whenever focus returns to the app (onResume).
-    lateinit var wifiEntries: ArrayList<WifiEntry>
+    private lateinit var wifiEntries: ArrayList<WifiEntry>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -30,7 +31,12 @@ class MainActivity: Activity() {
     // This function saves wifi entry data into the wifiEntries ArrayList.
     private fun loadWifiEntries() {
         Log.v(TAG, "Loading wifi entries...")
-        wifiEntries = WifiEntryLoader().readOreoFile()
+        wifiEntries = try {
+            WifiEntryLoader().readOreoFile()
+        } catch (e: IllegalStateException) {
+            Toast.makeText(this, "Failed to load wifi entries. Is your device rooted?", Toast.LENGTH_LONG).show()
+            ArrayList()
+        }
         Log.v(TAG, "Wifi entries loaded.")
     }
 }
