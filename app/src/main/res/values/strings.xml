@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">Wifi QR Code Creator</string>
+    <string name="error_dialog_title">An error has occurred processing the wifi information.</string>
+    <string name="error_dialog_message">Is this device rooted? This can fail if the app can\'t obtain root access.\n\nIf you\'re running a non-AOSP ROM, it\'s possible the wifi information is saved in a non-standard location.</string>
 </resources>
