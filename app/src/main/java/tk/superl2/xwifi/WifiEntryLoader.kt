@@ -120,7 +120,7 @@ object WifiEntryLoader {
         }
     }
 
-    fun readOreoFile(): ArrayList<WifiEntry>? {
+    fun readOreoFile(): ArrayList<WifiEntry> {
         val result = ArrayList<WifiEntry>()
         try {
             val suOreoProcess = Runtime.getRuntime().exec("su -c /system/bin/cat " + mOreoLocation)
@@ -150,8 +150,10 @@ object WifiEntryLoader {
             return if (!result.isEmpty()) {
                 result
             } else {
-                null
+                throw WifiUnparseableException()
             }
         }
     }
 }
+
+internal class WifiUnparseableException(override var message: String = "Wifi list could not be parsed."): Exception(message)
