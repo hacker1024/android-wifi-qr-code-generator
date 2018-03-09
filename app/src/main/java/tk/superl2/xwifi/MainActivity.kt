@@ -4,10 +4,14 @@ import android.app.Activity
 import android.app.AlertDialog
 import android.os.Bundle
 import android.util.Log
+import android.widget.ArrayAdapter
+import android.widget.ListView
 
 const val TAG = "MainActivity"
 
 class MainActivity: Activity() {
+    private lateinit var mWifiListView: ListView
+
     // This variable holds an ArrayList of WifiEntry objects that each contain a saved wifi SSID and
     // password. It is updated whenever focus returns to the app (onResume).
     private var wifiEntries: ArrayList<WifiEntry>? = null
@@ -18,11 +22,13 @@ class MainActivity: Activity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        mWifiListView = findViewById(R.id.wifi_ListView)
     }
 
     override fun onResume() {
         super.onResume()
         loadWifiEntries()
+        mWifiListView.adapter = ArrayAdapter(this, android.R.layout.simple_list_item_1, wifiEntrySSIDs)
     }
 
     // This function saves wifi entry data into the wifiEntries ArrayList.
