@@ -2,11 +2,8 @@ package tk.superl2.xwifi
 
 import android.app.Activity
 import android.app.AlertDialog
-import android.app.Dialog
 import android.os.Bundle
 import android.util.Log
-import android.widget.Button
-import android.widget.Toast
 
 const val TAG = "MainActivity"
 
@@ -21,15 +18,6 @@ class MainActivity: Activity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        findViewById<Button>(R.id.button).setOnClickListener {
-            Log.v(TAG, "Displaying wifi entries:")
-            if (wifiEntries != null) {
-                for (wifiEntry in wifiEntries!!) {
-                    Log.v(TAG, "Wifi SSID: ${wifiEntry.title}")
-                    Log.v(TAG, "Wifi Password: ${wifiEntry.getPassword(true)}")
-                }
-            }
-        }
     }
 
     override fun onResume() {
