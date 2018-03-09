@@ -10,6 +10,7 @@ import android.widget.ListView
 const val TAG = "MainActivity"
 
 class MainActivity: Activity() {
+    // ListView holder object
     private lateinit var mWifiListView: ListView
 
     // This variable holds an ArrayList of WifiEntry objects that each contain a saved wifi SSID and
