@@ -14,6 +14,8 @@ class MainActivity: Activity() {
     // This variable holds an ArrayList of WifiEntry objects that each contain a saved wifi SSID and
     // password. It is updated whenever focus returns to the app (onResume).
     private var wifiEntries: ArrayList<WifiEntry>? = null
+    private val wifiEntrySSIDs: ArrayList<String> = ArrayList()
+    private val wifiEntryPasswords: ArrayList<String> = ArrayList()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -60,6 +62,9 @@ class MainActivity: Activity() {
             errorDialog.show()
             Log.v(TAG, "Wifi entries failed to load.")
         } else {
+            wifiEntrySSIDs.clear()
+            wifiEntries!!.mapTo(wifiEntrySSIDs) { it.title }
+            wifiEntries!!.mapTo(wifiEntryPasswords) { it.getPassword(true) }
             Log.v(TAG, "Wifi entries loaded.")
         }
     }
