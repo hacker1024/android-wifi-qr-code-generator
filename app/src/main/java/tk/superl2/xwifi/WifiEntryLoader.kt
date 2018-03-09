@@ -31,7 +31,7 @@ object WifiEntryLoader {
 
             if (tagName == "Network") {
                 val newWifi = readNetworkEntry(parser)
-                if (newWifi.title.length != 0) {
+                if (newWifi.title.isNotEmpty()) {
                     result.add(newWifi)
                 }
             } else {
@@ -75,10 +75,10 @@ object WifiEntryLoader {
             if (name == "SSID" && !tagName.equals("null", ignoreCase = true)) {
                 result.title = readTag(parser, tagName)
             } else if (name == "PreSharedKey" && !tagName.equals("null", ignoreCase = true)) {
-                result.setPassword(readTag(parser, tagName))
+                result.password = readTag(parser, tagName)
                 //                result.setTyp(WifiObject.TYP_WPA);
             } else if (name == "WEPKeys" && !tagName.equals("null", ignoreCase = true)) {
-                result.setPassword(readTag(parser, tagName))
+                result.password = readTag(parser, tagName)
                 //                result.setTyp(WifiObject.TYP_WEP);
             } else {
                 skip(parser)
