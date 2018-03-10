@@ -6,7 +6,6 @@ import android.app.Dialog
 import android.os.AsyncTask
 import android.os.Bundle
 import android.util.Log
-import android.view.Gravity
 import android.widget.*
 
 const val TAG = "MainActivity"
