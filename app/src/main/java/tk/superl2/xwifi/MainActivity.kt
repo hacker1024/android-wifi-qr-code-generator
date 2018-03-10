@@ -17,8 +17,10 @@ class MainActivity: Activity() {
     // This variable holds an ArrayList of WifiEntry objects that each contain a saved wifi SSID and
     // password. It is updated whenever focus returns to the app (onResume).
     private lateinit var wifiEntries: ArrayList<WifiEntry>
-    private val wifiEntrySSIDs: ArrayList<String> = ArrayList()
-    private val wifiEntryPasswords: ArrayList<String> = ArrayList()
+    private val wifiEntryTypes  = ArrayList<WifiEntry.Type>()
+    private val wifiEntrySSIDs= ArrayList<String>()
+    private val wifiEntryPasswords = ArrayList<String>()
+
     private val loadWifiEntriesInBackgroundTask = LoadWifiEntriesInBackground()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -58,6 +60,11 @@ class MainActivity: Activity() {
         override fun onPostExecute(result: Unit?) {
             (mWifiListView.adapter as ArrayAdapter<*>).notifyDataSetChanged()
             loadingDialog.dismiss()
+//            for (i in 0 until wifiEntrySSIDs.size) {
+//                Log.v(TAG, "Wifi SSID: ${wifiEntrySSIDs[i]}")
+//                Log.v(TAG, "Wifi password: ${wifiEntryPasswords[i]}")
+//                Log.v(TAG, "Wifi type: ${wifiEntryTypes[i]}")
+//            }
         }
     }
 
@@ -67,10 +74,12 @@ class MainActivity: Activity() {
     private fun loadWifiEntries() {
         Log.v(TAG, "Loading wifi entries...")
         if (::wifiEntries.isInitialized) wifiEntries.clear()
+        wifiEntryTypes.clear()
         wifiEntrySSIDs.clear()
         wifiEntryPasswords.clear()
         try {
             wifiEntries = WifiEntryLoader.readOreoFile()
+            wifiEntries.mapTo(wifiEntryTypes) { it.type}
             wifiEntries.mapTo(wifiEntrySSIDs) { it.title }
             wifiEntries.mapTo(wifiEntryPasswords) { it.getPassword(true) }
             Log.v(TAG, "Wifi entries loaded.")

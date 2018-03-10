@@ -54,8 +54,8 @@ object WifiEntryLoader {
             // Starts by looking for the entry tag
             if (tagName == "WifiConfiguration") {
                 result = readWiFiConfig(parser, result)
-                //            } else if (tagName.equals("WifiEnterpriseConfiguration")) {
-                //                result.setTyp(WifiObject.TYP_ENTERPRISE);
+                            } else if (tagName.equals("WifiEnterpriseConfiguration")) {
+                                result.type = WifiEntry.Type.ENTERPRISE
             } else {
                 skip(parser)
             }
@@ -76,10 +76,10 @@ object WifiEntryLoader {
                 result.title = readTag(parser, tagName)
             } else if (name == "PreSharedKey" && !tagName.equals("null", ignoreCase = true)) {
                 result.password = readTag(parser, tagName)
-                //                result.setTyp(WifiObject.TYP_WPA);
+                                result.type = WifiEntry.Type.WPA
             } else if (name == "WEPKeys" && !tagName.equals("null", ignoreCase = true)) {
                 result.password = readTag(parser, tagName)
-                //                result.setTyp(WifiObject.TYP_WEP);
+                                result.type = WifiEntry.Type.WEP
             } else {
                 skip(parser)
             }

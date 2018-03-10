@@ -7,10 +7,13 @@ import java.util.Arrays
 
 
 class WifiEntry : Parcelable {
+    lateinit var type: Type
     lateinit var title: String
     lateinit var password: String
     var tag = ""
     var connectedInd = false
+
+    enum class Type { ENTERPRISE, WPA, WEP, NONE }
 
     constructor() {}
 
@@ -27,6 +30,7 @@ class WifiEntry : Parcelable {
         this.password = password
         this.connectedInd = connectedInd
         this.tag = tag
+        this.type = Type.NONE
     }
 
     fun getPassword(showAll: Boolean): String =
