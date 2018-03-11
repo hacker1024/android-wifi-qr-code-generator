@@ -94,7 +94,7 @@ class MainActivity: Activity() {
         }
         override fun onPostExecute(result: Unit?) {
             (mWifiListView.adapter as ArrayAdapter<*>).notifyDataSetChanged()
-            loadingDialog.dismiss()
+            runOnUiThread { loadingDialog.dismiss() }
         }
     }
 
