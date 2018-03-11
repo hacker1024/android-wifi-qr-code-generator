@@ -70,8 +70,8 @@ class MainActivity: Activity() {
         loadWifiEntriesInBackgroundTask.execute()
     }
 
-    public override fun onStop() {
-        super.onStop()
+    public override fun onPause() {
+        super.onPause()
         if (::errorDialog.isInitialized) errorDialog.dismiss()
         loadWifiEntriesInBackgroundTask.cancel(true)
         if (::loadingDialog.isInitialized) loadingDialog.dismiss()
