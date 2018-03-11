@@ -7,8 +7,11 @@ import android.os.AsyncTask
 import android.os.Bundle
 import android.util.Log
 import android.widget.*
+import net.glxn.qrgen.android.QRCode
+import net.glxn.qrgen.core.scheme.Wifi
 
 const val TAG = "MainActivity"
+const val QR_GENERATION_RESOLUTION = 300
 
 class MainActivity: Activity() {
     // ListView reference object
@@ -21,12 +24,31 @@ class MainActivity: Activity() {
 
     private lateinit var loadWifiEntriesInBackgroundTask: LoadWifiEntriesInBackground
 
+    lateinit var qrDialog: AlertDialog
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
         mWifiListView = findViewById(R.id.wifi_ListView)
         mWifiListView.adapter = ArrayAdapter(this, android.R.layout.simple_list_item_1, wifiEntrySSIDs)
+        mWifiListView.setOnItemClickListener { parent, view, position, id ->
+            val qrCodeView = ImageView(this)
+            qrCodeView.setPadding(0, 0, 0, -60)
+            qrCodeView.adjustViewBounds = true
+            qrCodeView.setImageBitmap(QRCode
+                    .from(Wifi()
+                        .withSsid(wifiEntrySSIDs[position])
+                        .withPsk(wifiEntries[position].getPassword(true))
+                        .withAuthentication(wifiEntries[position].type.asQRCodeAuth))
+                    .withSize(QR_GENERATION_RESOLUTION, QR_GENERATION_RESOLUTION)
+                    .bitmap())
+
+            val builder = AlertDialog.Builder(this)
+            builder.setView(qrCodeView)
+            builder.setPositiveButton("DONE") {dialog, which -> dialog.dismiss()}
+            qrDialog = builder.create()
+            qrDialog.show()
+        }
     }
 
     override fun onResume() {
@@ -40,6 +62,7 @@ class MainActivity: Activity() {
         if (::errorDialog.isInitialized) errorDialog.dismiss()
         loadWifiEntriesInBackgroundTask.cancel(true)
         if (::loadingDialog.isInitialized) loadingDialog.dismiss()
+        if (::qrDialog.isInitialized) qrDialog.dismiss()
     }
 
     // This task loads the wifi entries in the background, and notifies the list adapter that the data has changed.
@@ -85,16 +108,22 @@ class MainActivity: Activity() {
                 errorDialogBuilder.setTitle(R.string.error_dialog_title)
                 errorDialogBuilder.setMessage(R.string.error_dialog_message)
                 errorDialogBuilder.setNeutralButton("RETRY", { dialog, which ->
-                    dialog.dismiss()
+                    runOnUiThread {
+                        dialog.dismiss()
+                    }
                     loadWifiEntries()
                 })
                 errorDialogBuilder.setNegativeButton("EXIT", { dialog, which ->
-                    dialog.dismiss()
+                    runOnUiThread {
+                        dialog.dismiss()
+                    }
                     finishAndRemoveTask()
                 })
             }
-            errorDialog = errorDialogBuilder.create()
-            errorDialog.show()
+            runOnUiThread {
+                errorDialog = errorDialogBuilder.create()
+                errorDialog.show()
+            }
             Log.v(TAG, "Wifi entries failed to load.")
         }
     }
