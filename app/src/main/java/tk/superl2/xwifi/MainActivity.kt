@@ -21,7 +21,7 @@ class MainActivity: Activity() {
     private val wifiEntrySSIDs= ArrayList<String>()
     private val wifiEntryPasswords = ArrayList<String>()
 
-    private val loadWifiEntriesInBackgroundTask = LoadWifiEntriesInBackground()
+    private lateinit var loadWifiEntriesInBackgroundTask: LoadWifiEntriesInBackground
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -33,6 +33,7 @@ class MainActivity: Activity() {
 
     override fun onResume() {
         super.onResume()
+        loadWifiEntriesInBackgroundTask = LoadWifiEntriesInBackground()
         loadWifiEntriesInBackgroundTask.execute()
     }
 
