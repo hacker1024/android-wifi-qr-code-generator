@@ -123,7 +123,12 @@ object WifiEntryLoader {
     fun readOreoFile(): ArrayList<WifiEntry> {
         val result = ArrayList<WifiEntry>()
         try {
-            val suOreoProcess = Runtime.getRuntime().exec("su -c /system/bin/cat " + mOreoLocation)
+            val suOreoProcess = Runtime.getRuntime().exec("su")
+            val suOreoProcessOutputStream = suOreoProcess.outputStream
+            suOreoProcessOutputStream.write("/system/bin/cat $mOreoLocation\n".toByteArray())
+            suOreoProcessOutputStream.write("exit\n".toByteArray())
+            suOreoProcessOutputStream.flush()
+            suOreoProcessOutputStream.close()
             try {
                 suOreoProcess.waitFor()
             } catch (e: InterruptedException) {
