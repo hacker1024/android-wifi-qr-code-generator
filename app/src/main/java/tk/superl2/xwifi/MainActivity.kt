@@ -17,9 +17,7 @@ class MainActivity: Activity() {
     // This variable holds an ArrayList of WifiEntry objects that each contain a saved wifi SSID and
     // password. It is updated whenever focus returns to the app (onResume).
     private lateinit var wifiEntries: ArrayList<WifiEntry>
-    private val wifiEntryTypes  = ArrayList<WifiEntry.Type>()
-    private val wifiEntrySSIDs= ArrayList<String>()
-    private val wifiEntryPasswords = ArrayList<String>()
+    private val wifiEntrySSIDs = ArrayList<String>()
 
     private lateinit var loadWifiEntriesInBackgroundTask: LoadWifiEntriesInBackground
 
@@ -75,14 +73,10 @@ class MainActivity: Activity() {
     private fun loadWifiEntries() {
         Log.v(TAG, "Loading wifi entries...")
         if (::wifiEntries.isInitialized) wifiEntries.clear()
-        wifiEntryTypes.clear()
         wifiEntrySSIDs.clear()
-        wifiEntryPasswords.clear()
         try {
             wifiEntries = WifiEntryLoader.readOreoFile()
-            wifiEntries.mapTo(wifiEntryTypes) { it.type}
             wifiEntries.mapTo(wifiEntrySSIDs) { it.title }
-            wifiEntries.mapTo(wifiEntryPasswords) { it.getPassword(true) }
             Log.v(TAG, "Wifi entries loaded.")
         } catch(e: WifiUnparseableException) {
             if (!::errorDialogBuilder.isInitialized) {
