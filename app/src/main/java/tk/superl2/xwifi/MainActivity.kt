@@ -5,6 +5,7 @@ import android.app.AlertDialog
 import android.app.Dialog
 import android.os.AsyncTask
 import android.os.Bundle
+import android.text.Html
 import android.util.Log
 import android.widget.*
 import net.glxn.qrgen.android.QRCode
@@ -48,6 +49,18 @@ class MainActivity: Activity() {
             builder.setPositiveButton("DONE") {dialog, which -> dialog.dismiss()}
             qrDialog = builder.create()
             qrDialog.show()
+        }
+        mWifiListView.setOnItemLongClickListener { parent, view, position, id ->
+            val builder = AlertDialog.Builder(this)
+            builder.setMessage(Html.fromHtml(
+                    "<b>SSID</b>: ${wifiEntrySSIDs[position]}<br>" +
+                    (if (wifiEntries[position].getPassword(true) != "") "<b>Password</b>: ${wifiEntries[position].getPassword(true)}<br>" else {""}) +
+                    "<b>Type</b>: ${wifiEntries[position].type}",
+                    Html.FROM_HTML_MODE_LEGACY))
+            builder.setPositiveButton("DONE") {dialog, which -> dialog.dismiss()}
+            qrDialog = builder.create()
+            qrDialog.show()
+            true
         }
     }
 
