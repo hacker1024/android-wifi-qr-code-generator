@@ -95,11 +95,6 @@ class MainActivity: Activity() {
         override fun onPostExecute(result: Unit?) {
             (mWifiListView.adapter as ArrayAdapter<*>).notifyDataSetChanged()
             loadingDialog.dismiss()
-//            for (i in 0 until wifiEntrySSIDs.size) {
-//                Log.v(TAG, "Wifi SSID: ${wifiEntrySSIDs[i]}")
-//                Log.v(TAG, "Wifi password: ${wifiEntryPasswords[i]}")
-//                Log.v(TAG, "Wifi type: ${wifiEntryTypes[i]}")
-//            }
         }
     }
 
