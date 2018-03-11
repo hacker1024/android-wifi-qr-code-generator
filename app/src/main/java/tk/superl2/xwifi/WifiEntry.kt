@@ -2,6 +2,7 @@ package tk.superl2.xwifi
 
 import android.os.Parcel
 import android.os.Parcelable
+import net.glxn.qrgen.core.scheme.Wifi
 
 import java.util.Arrays
 
@@ -13,7 +14,13 @@ class WifiEntry : Parcelable {
     var tag = ""
     var connectedInd = false
 
-    enum class Type { ENTERPRISE, WPA, WEP, NONE }
+    enum class Type {
+        WPA { override val asQRCodeAuth = Wifi.Authentication.WPA },
+        WEP { override val asQRCodeAuth = Wifi.Authentication.WEP },
+        NONE { override val asQRCodeAuth = Wifi.Authentication.nopass },
+        ENTERPRISE { override val asQRCodeAuth = Wifi.Authentication.nopass };
+        abstract val asQRCodeAuth: Wifi.Authentication
+    }
 
     constructor() {}
 
