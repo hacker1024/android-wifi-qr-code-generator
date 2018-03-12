@@ -10,6 +10,7 @@ import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.*
+import kotlinx.android.synthetic.main.activity_main.*
 import net.glxn.qrgen.android.QRCode
 import net.glxn.qrgen.core.scheme.Wifi
 
@@ -17,8 +18,6 @@ const val TAG = "MainActivity"
 const val QR_GENERATION_RESOLUTION = 300
 
 class MainActivity: Activity() {
-    // ListView reference object
-    private lateinit var mWifiListView: ListView
     // This variable holds an ArrayList of WifiEntry objects that each contain a saved wifi SSID and
     // password. It is updated whenever focus returns to the app (onResume).
     private lateinit var wifiEntries: ArrayList<WifiEntry>
@@ -30,9 +29,8 @@ class MainActivity: Activity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        mWifiListView = findViewById(R.id.wifi_ListView)
-        mWifiListView.adapter = ArrayAdapter(this, android.R.layout.simple_list_item_1, wifiEntrySSIDs)
-        mWifiListView.setOnItemClickListener { _, _, position, _ ->
+        wifi_ListView.adapter = ArrayAdapter(this, android.R.layout.simple_list_item_1, wifiEntrySSIDs)
+        wifi_ListView.setOnItemClickListener { _, _, position, _ ->
             val qrCodeView = ImageView(this)
             qrCodeView.setPadding(0, 0, 0, -60)
             qrCodeView.adjustViewBounds = true
@@ -50,7 +48,7 @@ class MainActivity: Activity() {
             qrDialog = builder.create()
             qrDialog.show()
         }
-        mWifiListView.setOnItemLongClickListener { _, _, position, _ ->
+        wifi_ListView.setOnItemLongClickListener { _, _, position, _ ->
             val builder = AlertDialog.Builder(this)
             builder.setMessage(Html.fromHtml(
                     "<b>SSID</b>: ${wifiEntries[position].title}<br>" +
@@ -95,7 +93,7 @@ class MainActivity: Activity() {
             loadWifiEntries()
         }
         override fun onPostExecute(result: Unit?) {
-            (mWifiListView.adapter as ArrayAdapter<*>).notifyDataSetChanged()
+            (wifi_ListView.adapter as ArrayAdapter<*>).notifyDataSetChanged()
             runOnUiThread { loadingDialog.dismiss() }
         }
 
