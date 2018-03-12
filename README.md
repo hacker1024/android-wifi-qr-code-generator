@@ -8,6 +8,7 @@ Hold a wifi entry to display more details.
 
 ## What I'm working on next (from highest to lowest significance)
 - Bug fixes (always at the top of the list)
+- Sort networks alphabetically
 - An xposed component that adds an option in the stock wifi settings to display the QR code/password
 - Backport to older android versions
 - An about page
