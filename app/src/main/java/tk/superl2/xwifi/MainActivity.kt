@@ -52,7 +52,7 @@ class MainActivity: Activity() {
         mWifiListView.setOnItemLongClickListener { parent, view, position, id ->
             val builder = AlertDialog.Builder(this)
             builder.setMessage(Html.fromHtml(
-                    "<b>SSID</b>: ${wifiEntrySSIDs[position]}<br>" +
+                    "<b>SSID</b>: ${wifiEntries[position].title}<br>" +
                     (if (wifiEntries[position].getPassword(true) != "") "<b>Password</b>: ${wifiEntries[position].getPassword(true)}<br>" else {""}) +
                     "<b>Type</b>: ${wifiEntries[position].type}",
                     Html.FROM_HTML_MODE_LEGACY))
