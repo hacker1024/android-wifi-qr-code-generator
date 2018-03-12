@@ -25,7 +25,7 @@ class MainActivity: Activity() {
     private val wifiEntrySSIDs = ArrayList<String>()
     private lateinit var loadWifiEntriesInBackgroundTask: LoadWifiEntriesInBackground
 
-    lateinit var qrDialog: AlertDialog
+    private lateinit var qrDialog: AlertDialog
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
