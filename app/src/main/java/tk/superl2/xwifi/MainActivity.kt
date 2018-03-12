@@ -79,7 +79,7 @@ class MainActivity: Activity() {
     }
 
     // This task loads the wifi entries in the background, and notifies the list adapter that the data has changed.
-    lateinit var loadingDialog: Dialog
+    private lateinit var loadingDialog: AlertDialog
     private inner class LoadWifiEntriesInBackground: AsyncTask<Unit, Unit, Unit>() {
         override fun onPreExecute() {
             val loadingDialogBuilder = AlertDialog.Builder(this@MainActivity)
