@@ -79,6 +79,8 @@ class MainActivity: Activity() {
     }
 
     // This task loads the wifi entries in the background, and notifies the list adapter that the data has changed.
+    private lateinit var errorDialogBuilder: AlertDialog.Builder
+	private lateinit var errorDialog: AlertDialog
     private lateinit var loadingDialog: AlertDialog
     private inner class LoadWifiEntriesInBackground: AsyncTask<Unit, Unit, Unit>() {
         override fun onPreExecute() {
@@ -96,43 +98,41 @@ class MainActivity: Activity() {
             (mWifiListView.adapter as ArrayAdapter<*>).notifyDataSetChanged()
             runOnUiThread { loadingDialog.dismiss() }
         }
-    }
 
-    // This function saves wifi entry data into the wifiEntries ArrayList. It also throws up a dialog if the loading fails.
-    private lateinit var errorDialogBuilder: AlertDialog.Builder
-    private lateinit var errorDialog: AlertDialog
-    private fun loadWifiEntries() {
-        Log.v(TAG, "Loading wifi entries...")
-        if (::wifiEntries.isInitialized) wifiEntries.clear()
-        wifiEntrySSIDs.clear()
-        try {
-            wifiEntries = WifiEntryLoader.readOreoFile()
-            wifiEntries.mapTo(wifiEntrySSIDs) { it.title }
-            Log.v(TAG, "Wifi entries loaded.")
-        } catch(e: WifiUnparseableException) {
-            if (!::errorDialogBuilder.isInitialized) {
-                errorDialogBuilder = AlertDialog.Builder(this)
-                errorDialogBuilder.setCancelable(false)
-                errorDialogBuilder.setTitle(R.string.error_dialog_title)
-                errorDialogBuilder.setMessage(R.string.error_dialog_message)
-                errorDialogBuilder.setNeutralButton("RETRY", { dialog, which ->
-                    runOnUiThread {
-                        dialog.dismiss()
-                    }
-                    loadWifiEntries()
-                })
-                errorDialogBuilder.setNegativeButton("EXIT", { dialog, which ->
-                    runOnUiThread {
-                        dialog.dismiss()
-                    }
-                    finishAndRemoveTask()
-                })
-            }
-            runOnUiThread {
-                errorDialog = errorDialogBuilder.create()
-                errorDialog.show()
-            }
-            Log.v(TAG, "Wifi entries failed to load.")
-        }
+		// This function saves wifi entry data into the wifiEntries ArrayList. It also throws up a dialog if the loading fails.
+	    private fun loadWifiEntries() {
+		    Log.v(TAG, "Loading wifi entries...")
+		    if (::wifiEntries.isInitialized) wifiEntries.clear()
+		    wifiEntrySSIDs.clear()
+		    try {
+			    wifiEntries = WifiEntryLoader.readOreoFile()
+			    wifiEntries.mapTo(wifiEntrySSIDs) { it.title }
+			    Log.v(TAG, "Wifi entries loaded.")
+		    } catch(e: WifiUnparseableException) {
+			    if (!::errorDialogBuilder.isInitialized) {
+				    errorDialogBuilder = AlertDialog.Builder(this@MainActivity)
+				    errorDialogBuilder.setCancelable(false)
+				    errorDialogBuilder.setTitle(R.string.error_dialog_title)
+				    errorDialogBuilder.setMessage(R.string.error_dialog_message)
+				    errorDialogBuilder.setNeutralButton("RETRY", { dialog, which ->
+					    runOnUiThread {
+						    dialog.dismiss()
+					    }
+					    loadWifiEntries()
+				    })
+				    errorDialogBuilder.setNegativeButton("EXIT", { dialog, which ->
+					    runOnUiThread {
+						    dialog.dismiss()
+					    }
+					    finishAndRemoveTask()
+				    })
+			    }
+			    runOnUiThread {
+				    errorDialog = errorDialogBuilder.create()
+				    errorDialog.show()
+			    }
+			    Log.v(TAG, "Wifi entries failed to load.")
+		    }
+	    }
     }
 }
