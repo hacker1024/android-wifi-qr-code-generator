@@ -2,10 +2,13 @@ package tk.superl2.xwifi
 
 import android.app.Activity
 import android.app.AlertDialog
+import android.content.Intent
 import android.os.AsyncTask
 import android.os.Bundle
 import android.text.Html
 import android.util.Log
+import android.view.Menu
+import android.view.MenuItem
 import android.widget.*
 import net.glxn.qrgen.android.QRCode
 import net.glxn.qrgen.core.scheme.Wifi
@@ -16,12 +19,10 @@ const val QR_GENERATION_RESOLUTION = 300
 class MainActivity: Activity() {
     // ListView reference object
     private lateinit var mWifiListView: ListView
-
     // This variable holds an ArrayList of WifiEntry objects that each contain a saved wifi SSID and
     // password. It is updated whenever focus returns to the app (onResume).
     private lateinit var wifiEntries: ArrayList<WifiEntry>
     private val wifiEntrySSIDs = ArrayList<String>()
-
     private lateinit var loadWifiEntriesInBackgroundTask: LoadWifiEntriesInBackground
 
     lateinit var qrDialog: AlertDialog
@@ -134,5 +135,20 @@ class MainActivity: Activity() {
 			    Log.v(TAG, "Wifi entries failed to load.")
 		    }
 	    }
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.menu_activity_main, menu)
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
+        return when (item!!.itemId) {
+            R.id.settingsItem -> {
+                startActivity(Intent(this, SettingsActivity::class.java))
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
     }
 }
