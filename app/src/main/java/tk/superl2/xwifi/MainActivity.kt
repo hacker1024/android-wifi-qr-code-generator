@@ -32,7 +32,7 @@ class MainActivity: Activity() {
 
         mWifiListView = findViewById(R.id.wifi_ListView)
         mWifiListView.adapter = ArrayAdapter(this, android.R.layout.simple_list_item_1, wifiEntrySSIDs)
-        mWifiListView.setOnItemClickListener { parent, view, position, id ->
+        mWifiListView.setOnItemClickListener { _, _, position, _ ->
             val qrCodeView = ImageView(this)
             qrCodeView.setPadding(0, 0, 0, -60)
             qrCodeView.adjustViewBounds = true
@@ -46,18 +46,18 @@ class MainActivity: Activity() {
 
             val builder = AlertDialog.Builder(this)
             builder.setView(qrCodeView)
-            builder.setPositiveButton("DONE") {dialog, which -> dialog.dismiss()}
+            builder.setPositiveButton("DONE") { dialog, _ -> dialog.dismiss()}
             qrDialog = builder.create()
             qrDialog.show()
         }
-        mWifiListView.setOnItemLongClickListener { parent, view, position, id ->
+        mWifiListView.setOnItemLongClickListener { _, _, position, _ ->
             val builder = AlertDialog.Builder(this)
             builder.setMessage(Html.fromHtml(
                     "<b>SSID</b>: ${wifiEntries[position].title}<br>" +
                     (if (wifiEntries[position].getPassword(true) != "") "<b>Password</b>: ${wifiEntries[position].getPassword(true)}<br>" else {""}) +
                     "<b>Type</b>: ${wifiEntries[position].type}",
                     Html.FROM_HTML_MODE_LEGACY))
-            builder.setPositiveButton("DONE") {dialog, which -> dialog.dismiss()}
+            builder.setPositiveButton("DONE") {dialog, _ -> dialog.dismiss()}
             qrDialog = builder.create()
             qrDialog.show()
             true
@@ -115,13 +115,13 @@ class MainActivity: Activity() {
 				    errorDialogBuilder.setCancelable(false)
 				    errorDialogBuilder.setTitle(R.string.error_dialog_title)
 				    errorDialogBuilder.setMessage(R.string.error_dialog_message)
-				    errorDialogBuilder.setNeutralButton("RETRY", { dialog, which ->
+				    errorDialogBuilder.setNeutralButton("RETRY", { dialog, _ ->
 					    runOnUiThread {
 						    dialog.dismiss()
 					    }
 					    loadWifiEntries()
 				    })
-				    errorDialogBuilder.setNegativeButton("EXIT", { dialog, which ->
+				    errorDialogBuilder.setNegativeButton("EXIT", { dialog, _ ->
 					    runOnUiThread {
 						    dialog.dismiss()
 					    }
