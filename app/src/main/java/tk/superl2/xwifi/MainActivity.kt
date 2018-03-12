@@ -2,7 +2,6 @@ package tk.superl2.xwifi
 
 import android.app.Activity
 import android.app.AlertDialog
-import android.app.Dialog
 import android.os.AsyncTask
 import android.os.Bundle
 import android.text.Html
