@@ -15,11 +15,15 @@ class WifiEntry : Parcelable {
     var connectedInd = false
 
     enum class Type {
-        WPA { override val asQRCodeAuth = Wifi.Authentication.WPA },
-        WEP { override val asQRCodeAuth = Wifi.Authentication.WEP },
-        NONE { override val asQRCodeAuth = Wifi.Authentication.nopass },
-        ENTERPRISE { override val asQRCodeAuth = Wifi.Authentication.nopass };
-        abstract val asQRCodeAuth: Wifi.Authentication
+        WPA { override fun asQRCodeAuth() = Wifi.Authentication.WPA },
+        WEP { override fun asQRCodeAuth() = Wifi.Authentication.WEP },
+        NONE { override fun asQRCodeAuth() = Wifi.Authentication.nopass },
+        ENTERPRISE {
+            override fun asQRCodeAuth(): Wifi.Authentication {
+                throw GetEAPTypeException()
+            }
+        };
+        abstract fun asQRCodeAuth(): Wifi.Authentication
     }
 
     constructor() {}
@@ -80,3 +84,5 @@ class WifiEntry : Parcelable {
         }
     }
 }
+
+internal class GetEAPTypeException(override var message: String = "The QR Code library does not support EAP. There's no reason this function should be called on an EAP enum."): Exception(message)

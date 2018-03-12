@@ -39,7 +39,7 @@ class MainActivity: Activity() {
                     .from(Wifi()
                         .withSsid(wifiEntrySSIDs[position])
                         .withPsk(wifiEntries[position].getPassword(true))
-                        .withAuthentication(wifiEntries[position].type.asQRCodeAuth))
+                        .withAuthentication(wifiEntries[position].type.asQRCodeAuth()))
                     .withSize(QR_GENERATION_RESOLUTION, QR_GENERATION_RESOLUTION)
                     .bitmap())
 
