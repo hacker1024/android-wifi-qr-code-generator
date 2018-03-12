@@ -105,6 +105,7 @@ class MainActivity: Activity() {
 		    wifiEntrySSIDs.clear()
 		    try {
 			    wifiEntries = WifiEntryLoader.readOreoFile()
+			    wifiEntries.removeIf { it.type == WifiEntry.Type.ENTERPRISE }
 			    wifiEntries.mapTo(wifiEntrySSIDs) { it.title }
 			    Log.v(TAG, "Wifi entries loaded.")
 		    } catch(e: WifiUnparseableException) {
