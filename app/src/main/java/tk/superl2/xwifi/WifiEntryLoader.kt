@@ -51,12 +51,10 @@ object WifiEntryLoader {
             }
             val tagName = parser.name
             // Starts by looking for the entry tag
-            if (tagName == "WifiConfiguration") {
-                result = readWiFiConfig(parser, result)
-                            } else if (tagName.equals("WifiEnterpriseConfiguration")) {
-                                result.type = WifiEntry.Type.ENTERPRISE
-            } else {
-                skip(parser)
+            when (tagName) {
+                "WifiConfiguration" -> result = readWiFiConfig(parser, result)
+                "WifiEnterpriseConfiguration" -> result.type = WifiEntry.Type.ENTERPRISE
+                else -> skip(parser)
             }
         }
         return result
