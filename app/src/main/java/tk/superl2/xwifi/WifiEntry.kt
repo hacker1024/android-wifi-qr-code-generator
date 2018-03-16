@@ -26,7 +26,9 @@ class WifiEntry : Parcelable {
         abstract fun asQRCodeAuth(): Wifi.Authentication
     }
 
-    constructor() {}
+    constructor() {
+        initVars("", "", false, "")
+    }
 
     constructor(title: String, password: String) {
         initVars(title, password, false, "")
