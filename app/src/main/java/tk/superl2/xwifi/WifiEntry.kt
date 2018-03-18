@@ -30,14 +30,6 @@ class WifiEntry : Parcelable {
         initVars("", "", false, "")
     }
 
-    constructor(title: String, password: String) {
-        initVars(title, password, false, "")
-    }
-
-    constructor(title: String, password: String, connectedInd: Boolean) {
-        initVars(title, password, connectedInd, "")
-    }
-
     private fun initVars(title: String, password: String, connectedInd: Boolean, tag: String) {
         this.title = title
         this.password = password
@@ -87,4 +79,4 @@ class WifiEntry : Parcelable {
     }
 }
 
-internal class GetEAPTypeException(override var message: String = "The QR Code library does not support EAP. There's no reason this function should be called on an EAP enum."): Exception(message)
+internal class GetEAPTypeException(message: String = "The QR Code library does not support EAP. There's no reason this function should be called on an EAP enum."): Exception(message)
