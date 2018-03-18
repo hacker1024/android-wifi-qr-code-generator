@@ -103,7 +103,7 @@ class MainActivity: Activity() {
 		    if (::wifiEntries.isInitialized) wifiEntries.clear()
 		    wifiEntrySSIDs.clear()
 		    try {
-			    wifiEntries = WifiEntryLoaderJava.readOreoFile()
+			    wifiEntries = WifiEntryLoader.readOreoFile()
 			    wifiEntries.removeIf { it.type == WifiEntry.Type.ENTERPRISE }
 			    wifiEntries.mapTo(wifiEntrySSIDs) { it.title }
 			    Log.v(TAG, "Wifi entries loaded.")
