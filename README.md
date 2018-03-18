@@ -12,13 +12,13 @@ Hold a wifi entry to display more details.
 - An xposed component that adds an option in the stock wifi settings to display the QR code/password
 - Backport to older android versions
 - An about page
-- Setting to choose the quality of the QR code generated
+~~- Setting to choose the quality of the QR code generated~~ Done. https://github.com/hacker1024/android-wifi-qr-code-generator/commit/22a23887bc334000e5c71f66fcbbfda0197d7348
 - A dark theme
 - Make new bugs
 
 ## Possible issues
 I need feedback to see if these are only happening to some people or if they're happening to everyone.
-- WEP networks may cause an error.
+~~- WEP networks may cause an error.~~ Fixed. https://github.com/hacker1024/android-wifi-qr-code-generator/commit/613c555453f9944d8d772faaa2c6d8c508deca76
 
 ## Third-party libraries/code
 - [Parsing](https://github.com/David-Mawer/OreoWifiPasswords/blob/0d146fd34ce424b8a500a441ff2a1293c3355a33/app/src/main/java/com/pithsoftware/wifipasswords/task/TaskLoadWifiEntries.java) and [data management code](https://github.com/David-Mawer/OreoWifiPasswords/blob/ae0d7e7f290345bdf1a2d0742b8da5d25a76807b/app/src/main/java/com/pithsoftware/wifipasswords/pojo/WifiEntry.java) by [David-Mawer](https://github.com/David-Mawer/) has been used, adapted, and converted to Kotlin.
