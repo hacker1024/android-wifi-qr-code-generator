@@ -2,9 +2,7 @@ package tk.superl2.xwifi
 
 import android.os.Bundle
 import android.preference.PreferenceActivity
-import android.R.xml
 import android.preference.PreferenceFragment
-
 
 
 /**

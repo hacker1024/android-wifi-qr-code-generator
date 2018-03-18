@@ -3,19 +3,23 @@ package tk.superl2.xwifi
 import android.app.Activity
 import android.app.AlertDialog
 import android.content.Intent
+import android.content.SharedPreferences
 import android.os.AsyncTask
 import android.os.Bundle
+import android.preference.PreferenceManager
 import android.text.Html
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
-import android.widget.*
+import android.widget.ArrayAdapter
+import android.widget.ImageView
+import android.widget.ProgressBar
 import kotlinx.android.synthetic.main.activity_main.*
 import net.glxn.qrgen.android.QRCode
 import net.glxn.qrgen.core.scheme.Wifi
 
 const val TAG = "MainActivity"
-const val QR_GENERATION_RESOLUTION = 300
+const val DEFAULT_QR_GENERATION_RESOLUTION = "300"
 
 class MainActivity: Activity() {
     // This variable holds an ArrayList of WifiEntry objects that each contain a saved wifi SSID and
@@ -23,11 +27,15 @@ class MainActivity: Activity() {
     private lateinit var wifiEntries: ArrayList<WifiEntry>
     private val wifiEntrySSIDs = ArrayList<String>()
     private lateinit var loadWifiEntriesInBackgroundTask: LoadWifiEntriesInBackground
+    private lateinit var prefs: SharedPreferences
 
     private lateinit var qrDialog: AlertDialog
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        PreferenceManager.setDefaultValues(this, R.xml.preferences, false)
+        prefs = PreferenceManager.getDefaultSharedPreferences(this)
 
         wifi_ListView.adapter = ArrayAdapter(this, android.R.layout.simple_list_item_1, wifiEntrySSIDs)
         wifi_ListView.setOnItemClickListener { _, _, position, _ ->
@@ -39,7 +47,7 @@ class MainActivity: Activity() {
                         .withSsid(wifiEntrySSIDs[position])
                         .withPsk(wifiEntries[position].getPassword(true))
                         .withAuthentication(wifiEntries[position].type.asQRCodeAuth()))
-                    .withSize(QR_GENERATION_RESOLUTION, QR_GENERATION_RESOLUTION)
+                    .withSize(prefs.getString("qr_code_resolution", DEFAULT_QR_GENERATION_RESOLUTION).toInt(), prefs.getString("qr_code_resolution", DEFAULT_QR_GENERATION_RESOLUTION).toInt())
                     .bitmap())
 
             val builder = AlertDialog.Builder(this)
@@ -135,7 +143,7 @@ class MainActivity: Activity() {
 	    }
     }
 
-    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.menu_activity_main, menu)
         return true
     }
