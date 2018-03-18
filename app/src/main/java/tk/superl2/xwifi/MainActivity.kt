@@ -5,6 +5,7 @@ import android.app.AlertDialog
 import android.content.Intent
 import android.content.SharedPreferences
 import android.os.AsyncTask
+import android.os.Build
 import android.os.Bundle
 import android.preference.PreferenceManager
 import android.text.Html
@@ -21,7 +22,7 @@ import net.glxn.qrgen.core.scheme.Wifi
 const val TAG = "MainActivity"
 const val DEFAULT_QR_GENERATION_RESOLUTION = "300"
 
-class MainActivity: Activity() {
+class MainActivity : Activity() {
     // This variable holds an ArrayList of WifiEntry objects that each contain a saved wifi SSID and
     // password. It is updated whenever focus returns to the app (onResume).
     private lateinit var wifiEntries: ArrayList<WifiEntry>
@@ -44,26 +45,40 @@ class MainActivity: Activity() {
             qrCodeView.adjustViewBounds = true
             qrCodeView.setImageBitmap(QRCode
                     .from(Wifi()
-                        .withSsid(wifiEntrySSIDs[position])
-                        .withPsk(wifiEntries[position].getPassword(true))
-                        .withAuthentication(wifiEntries[position].type.asQRCodeAuth()))
+                            .withSsid(wifiEntrySSIDs[position])
+                            .withPsk(wifiEntries[position].getPassword(true))
+                            .withAuthentication(wifiEntries[position].type.asQRCodeAuth()))
                     .withSize(prefs.getString("qr_code_resolution", DEFAULT_QR_GENERATION_RESOLUTION).toInt(), prefs.getString("qr_code_resolution", DEFAULT_QR_GENERATION_RESOLUTION).toInt())
                     .bitmap())
 
             val builder = AlertDialog.Builder(this)
             builder.setView(qrCodeView)
-            builder.setPositiveButton("DONE") { dialog, _ -> dialog.dismiss()}
+            builder.setPositiveButton("DONE") { dialog, _ -> dialog.dismiss() }
             qrDialog = builder.create()
             qrDialog.show()
         }
         wifi_ListView.setOnItemLongClickListener { _, _, position, _ ->
             val builder = AlertDialog.Builder(this)
-            builder.setMessage(Html.fromHtml(
-                    "<b>SSID</b>: ${wifiEntries[position].title}<br>" +
-                    (if (wifiEntries[position].getPassword(true) != "") "<b>Password</b>: ${wifiEntries[position].getPassword(true)}<br>" else {""}) +
-                    "<b>Type</b>: ${wifiEntries[position].type}",
-                    Html.FROM_HTML_MODE_LEGACY))
-            builder.setPositiveButton("DONE") {dialog, _ -> dialog.dismiss()}
+            builder.setMessage(if (Build.VERSION.SDK_INT >= 24) {
+                Html.fromHtml(
+                        "<b>SSID</b>: ${wifiEntries[position].title}<br>" +
+                                (if (wifiEntries[position].getPassword(true) != "") "<b>Password</b>: ${wifiEntries[position].getPassword(true)}<br>" else {
+                                    ""
+                                }) +
+                                "<b>Type</b>: ${wifiEntries[position].type}",
+                        Html.FROM_HTML_MODE_LEGACY)
+            } else {
+                @Suppress("DEPRECATION")
+                Html.fromHtml(
+                        "<b>SSID</b>: ${wifiEntries[position].title}<br>" +
+                                (if (wifiEntries[position].getPassword(true) != "") "<b>Password</b>: ${wifiEntries[position].getPassword(true)}<br>" else {
+                                    ""
+                                }) +
+                                "<b>Type</b>: ${wifiEntries[position].type}"
+                )
+            }
+            )
+            builder.setPositiveButton("DONE") { dialog, _ -> dialog.dismiss() }
             qrDialog = builder.create()
             qrDialog.show()
             true
@@ -86,9 +101,10 @@ class MainActivity: Activity() {
 
     // This task loads the wifi entries in the background, and notifies the list adapter that the data has changed.
     private lateinit var errorDialogBuilder: AlertDialog.Builder
-	private lateinit var errorDialog: AlertDialog
+    private lateinit var errorDialog: AlertDialog
     private lateinit var loadingDialog: AlertDialog
-    private inner class LoadWifiEntriesInBackground: AsyncTask<Unit, Unit, Unit>() {
+
+    private inner class LoadWifiEntriesInBackground : AsyncTask<Unit, Unit, Unit>() {
         override fun onPreExecute() {
             val loadingDialogBuilder = AlertDialog.Builder(this@MainActivity)
             loadingDialogBuilder.setCancelable(false)
@@ -97,50 +113,56 @@ class MainActivity: Activity() {
             loadingDialog = loadingDialogBuilder.create()
             loadingDialog.show()
         }
+
         override fun doInBackground(vararg params: Unit?) {
             loadWifiEntries()
         }
+
         override fun onPostExecute(result: Unit?) {
             (wifi_ListView.adapter as ArrayAdapter<*>).notifyDataSetChanged()
             runOnUiThread { loadingDialog.dismiss() }
         }
 
-		// This function saves wifi entry data into the wifiEntries ArrayList. It also throws up a dialog if the loading fails.
-	    private fun loadWifiEntries() {
-		    Log.v(TAG, "Loading wifi entries...")
-		    if (::wifiEntries.isInitialized) wifiEntries.clear()
-		    wifiEntrySSIDs.clear()
-		    try {
-			    wifiEntries = WifiEntryLoader.readOreoFile()
-			    wifiEntries.removeIf { it.type == WifiEntry.Type.ENTERPRISE }
-			    wifiEntries.mapTo(wifiEntrySSIDs) { it.title }
-			    Log.v(TAG, "Wifi entries loaded.")
-		    } catch(e: WifiUnparseableException) {
-			    if (!::errorDialogBuilder.isInitialized) {
-				    errorDialogBuilder = AlertDialog.Builder(this@MainActivity)
-				    errorDialogBuilder.setCancelable(false)
-				    errorDialogBuilder.setTitle(R.string.error_dialog_title)
-				    errorDialogBuilder.setMessage(R.string.error_dialog_message)
-				    errorDialogBuilder.setNeutralButton("RETRY", { dialog, _ ->
-					    runOnUiThread {
-						    dialog.dismiss()
-					    }
-					    loadWifiEntries()
-				    })
-				    errorDialogBuilder.setNegativeButton("EXIT", { dialog, _ ->
-					    runOnUiThread {
-						    dialog.dismiss()
-					    }
-					    finishAndRemoveTask()
-				    })
-			    }
-			    runOnUiThread {
-				    errorDialog = errorDialogBuilder.create()
-				    errorDialog.show()
-			    }
-			    Log.v(TAG, "Wifi entries failed to load.")
-		    }
-	    }
+        // This function saves wifi entry data into the wifiEntries ArrayList. It also throws up a dialog if the loading fails.
+        private fun loadWifiEntries() {
+            Log.v(TAG, "Loading wifi entries...")
+            if (::wifiEntries.isInitialized) wifiEntries.clear()
+            wifiEntrySSIDs.clear()
+            try {
+                wifiEntries = WifiEntryLoader.readOreoFile()
+                if (Build.VERSION.SDK_INT >= 24) {
+                    wifiEntries.removeIf { it.type == WifiEntry.Type.ENTERPRISE }
+                } else {
+                    for (i in 0..wifiEntries.size) if (wifiEntries[1].type == WifiEntry.Type.ENTERPRISE) wifiEntries.removeAt(i)
+                }
+                wifiEntries.mapTo(wifiEntrySSIDs) { it.title }
+                Log.v(TAG, "Wifi entries loaded.")
+            } catch (e: WifiUnparseableException) {
+                if (!::errorDialogBuilder.isInitialized) {
+                    errorDialogBuilder = AlertDialog.Builder(this@MainActivity)
+                    errorDialogBuilder.setCancelable(false)
+                    errorDialogBuilder.setTitle(R.string.error_dialog_title)
+                    errorDialogBuilder.setMessage(R.string.error_dialog_message)
+                    errorDialogBuilder.setNeutralButton("RETRY", { dialog, _ ->
+                        runOnUiThread {
+                            dialog.dismiss()
+                        }
+                        loadWifiEntries()
+                    })
+                    errorDialogBuilder.setNegativeButton("EXIT", { dialog, _ ->
+                        runOnUiThread {
+                            dialog.dismiss()
+                        }
+                        finishAndRemoveTask()
+                    })
+                }
+                runOnUiThread {
+                    errorDialog = errorDialogBuilder.create()
+                    errorDialog.show()
+                }
+                Log.v(TAG, "Wifi entries failed to load.")
+            }
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
