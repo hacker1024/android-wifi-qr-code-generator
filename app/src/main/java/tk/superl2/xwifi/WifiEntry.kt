@@ -30,12 +30,16 @@ class WifiEntry : Parcelable {
         initVars("", "", false, "")
     }
 
-    private fun initVars(title: String, password: String, connectedInd: Boolean, tag: String) {
+    constructor(title: String, password: String, type: Type) {
+        initVars(title, password, false, "", type)
+    }
+
+    private fun initVars(title: String, password: String, connectedInd: Boolean, tag: String, type: Type = Type.NONE) {
         this.title = title
         this.password = password
         this.connectedInd = connectedInd
         this.tag = tag
-        this.type = Type.NONE
+        this.type = type
     }
 
     fun getPassword(showAll: Boolean): String =

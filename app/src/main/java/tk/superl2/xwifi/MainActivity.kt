@@ -129,12 +129,7 @@ class MainActivity : Activity() {
             if (::wifiEntries.isInitialized) wifiEntries.clear()
             wifiEntrySSIDs.clear()
             try {
-                wifiEntries = WifiEntryLoader.readOreoFile()
-                if (Build.VERSION.SDK_INT >= 24) {
-                    wifiEntries.removeIf { it.type == WifiEntry.Type.ENTERPRISE }
-                } else {
-                    for (i in 0..wifiEntries.size) if (wifiEntries[1].type == WifiEntry.Type.ENTERPRISE) wifiEntries.removeAt(i)
-                }
+                wifiEntries = if (Build.VERSION.SDK_INT >= 26) WifiEntryLoader.readOreoFile() else WifiEntryLoader.readNonOreoFile()
                 wifiEntries.mapTo(wifiEntrySSIDs) { it.title }
                 Log.v(TAG, "Wifi entries loaded.")
             } catch (e: WifiUnparseableException) {
@@ -153,7 +148,11 @@ class MainActivity : Activity() {
                         runOnUiThread {
                             dialog.dismiss()
                         }
-                        finishAndRemoveTask()
+                        if (Build.VERSION.SDK_INT >= 21) {
+                            finishAndRemoveTask()
+                        } else {
+                            finish()
+                        }
                     })
                 }
                 runOnUiThread {

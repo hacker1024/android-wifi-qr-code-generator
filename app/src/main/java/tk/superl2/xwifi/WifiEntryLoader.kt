@@ -4,8 +4,11 @@ import android.util.Log
 import android.util.Xml
 import org.xmlpull.v1.XmlPullParser
 import org.xmlpull.v1.XmlPullParserException
+import java.io.BufferedReader
 import java.io.IOException
+import java.io.InputStreamReader
 import java.util.*
+
 
 object WifiEntryLoader {
     private const val mOreoLocation = "/data/misc/wifi/WifiConfigStore.xml"
@@ -29,7 +32,7 @@ object WifiEntryLoader {
 
                 if (tagName == "Network") {
                     val newWifi = readNetworkEntry(parser)
-                    if (newWifi.title.isNotEmpty()) {
+                    if (newWifi.title.isNotEmpty() && newWifi.type != WifiEntry.Type.ENTERPRISE) {
                         result.add(newWifi)
                     }
                 } else {
@@ -191,6 +194,106 @@ object WifiEntryLoader {
             }
         }
     }
+
+    // LOADING FUNCTION FOR NOUGAT AND LOWER
+    private val mLocationList = arrayOf("/data/misc/wifi/wpa_supplicant.conf", "/data/wifi/bcm_supp.conf", "/data/misc/wifi/wpa.conf")
+    private const val SSID = "ssid=\""
+    private const val WPA_PSK = "psk=\""
+    private const val WEP_PSK = "wep_key0=\""
+    private const val EAP = "eap="
+    private const val ENTRY_START = "network={"
+    private const val ENTRY_END = "}"
+    fun readNonOreoFile(): ArrayList<WifiEntry> {
+
+        val listWifi = ArrayList<WifiEntry>()
+        var bufferedReader: BufferedReader? = null
+
+        try {
+            //Check for file in all known locations
+            for (i in 0 until mLocationList.size) {
+
+                val suProcess = Runtime.getRuntime().exec("su")
+                val suProcessOutputStream = suProcess.outputStream
+                suProcessOutputStream.write("/system/bin/cat ${mLocationList[i]}\n".toByteArray())
+                suProcessOutputStream.write("exit\n".toByteArray())
+                suProcessOutputStream.flush()
+                suProcessOutputStream.close()
+                try {
+                    suProcess.waitFor()
+                } catch (e: InterruptedException) {
+                    e.printStackTrace()
+                }
+
+                bufferedReader = BufferedReader(InputStreamReader(suProcess.inputStream))
+                val testString = bufferedReader.readLine()
+
+                if (testString != null) {
+                    break
+
+                } else if (i == mLocationList.size - 1) {
+                    throw WifiUnparseableException()
+                }
+            }
+
+            if (bufferedReader == null) {
+                return ArrayList()
+            }
+
+            var line: String
+            var title = ""
+            var password = ""
+
+            while (true) {
+                line = bufferedReader.readLine() ?: break
+                if (line.contains(ENTRY_START)) {
+                    var type: WifiEntry.Type = WifiEntry.Type.NONE
+                    when {
+                        line.contains(SSID) -> title = line.removeSuffix(ENTRY_END).trim().removePrefix(ENTRY_START).trim().removePrefix(SSID).removeSuffix("\"")
+
+                        line.contains(WPA_PSK) -> {
+                            type = WifiEntry.Type.WPA
+                            password = line.removeSuffix(ENTRY_END).trim().removePrefix(ENTRY_START).trim().removePrefix(WPA_PSK).removeSuffix("\"")
+
+                        }
+                        line.contains(WEP_PSK) -> {
+                            type = WifiEntry.Type.WEP
+                            password = line.removeSuffix(ENTRY_END).trim().removePrefix(ENTRY_START).trim().removePrefix(WEP_PSK).removeSuffix("\"")
+                        }
+                        line.contains(EAP) -> type = WifiEntry.Type.ENTERPRISE
+                    }
+                    while (!line.contains(ENTRY_END)) {
+                        line = bufferedReader.readLine()
+
+                        when {
+                            line.contains(SSID) -> title = line.removeSuffix(ENTRY_END).trim().removePrefix(SSID).removeSuffix("\"")
+
+                            line.contains(WPA_PSK) -> {
+                                type = WifiEntry.Type.WPA
+                                password = line.removeSuffix(ENTRY_END).trim().removePrefix(WPA_PSK).removeSuffix("\"")
+
+                            }
+                            line.contains(WEP_PSK) -> {
+                                type = WifiEntry.Type.WEP
+                                password = line.removeSuffix(ENTRY_END).trim().removePrefix(WEP_PSK).removeSuffix("\"")
+                            }
+                            line.contains(EAP) -> type = WifiEntry.Type.ENTERPRISE
+                        }
+                    }
+
+                    val current = WifiEntry(title, password, type)
+                    if (current.type != WifiEntry.Type.ENTERPRISE) listWifi.add(current)
+
+                    title = ""
+                    password = ""
+                }
+            }
+        } catch (e: IOException) {
+            e.printStackTrace()
+            throw WifiUnparseableException()
+        }
+
+        return listWifi
+    }
 }
 
-class WifiUnparseableException(message: String = "Wifi list could not be parsed."): Exception(message)
+class WifiUnparseableException(message: String = "Wifi list could not be parsed.") : Exception(message)
