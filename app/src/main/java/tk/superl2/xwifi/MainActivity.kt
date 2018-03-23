@@ -62,18 +62,14 @@ class MainActivity : Activity() {
             builder.setMessage(if (Build.VERSION.SDK_INT >= 24) {
                 Html.fromHtml(
                         "<b>SSID</b>: ${wifiEntries[position].title}<br>" +
-                                (if (wifiEntries[position].getPassword(true) != "") "<b>Password</b>: ${wifiEntries[position].getPassword(true)}<br>" else {
-                                    ""
-                                }) +
+                                (if (wifiEntries[position].getPassword(true) != "") "<b>Password</b>: ${wifiEntries[position].getPassword(true)}<br>" else { "" }) +
                                 "<b>Type</b>: ${wifiEntries[position].type}",
                         Html.FROM_HTML_MODE_LEGACY)
             } else {
                 @Suppress("DEPRECATION")
                 Html.fromHtml(
                         "<b>SSID</b>: ${wifiEntries[position].title}<br>" +
-                                (if (wifiEntries[position].getPassword(true) != "") "<b>Password</b>: ${wifiEntries[position].getPassword(true)}<br>" else {
-                                    ""
-                                }) +
+                                (if (wifiEntries[position].getPassword(true) != "") "<b>Password</b>: ${wifiEntries[position].getPassword(true)}<br>" else { "" }) +
                                 "<b>Type</b>: ${wifiEntries[position].type}"
                 )
             }
@@ -129,7 +125,7 @@ class MainActivity : Activity() {
             if (::wifiEntries.isInitialized) wifiEntries.clear()
             wifiEntrySSIDs.clear()
             try {
-                wifiEntries = if (Build.VERSION.SDK_INT >= 26) WifiEntryLoader.readOreoFile() else WifiEntryLoader.readNonOreoFile()
+                wifiEntries = if (Build.VERSION.SDK_INT >= 26) readOreoFile() else readNonOreoFile()
                 wifiEntries.mapTo(wifiEntrySSIDs) { it.title }
                 Log.v(TAG, "Wifi entries loaded.")
             } catch (e: WifiUnparseableException) {
