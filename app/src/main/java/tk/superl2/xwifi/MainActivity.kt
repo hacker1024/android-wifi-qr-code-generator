@@ -19,8 +19,8 @@ import kotlinx.android.synthetic.main.activity_main.*
 import net.glxn.qrgen.android.QRCode
 import net.glxn.qrgen.core.scheme.Wifi
 
-const val TAG = "MainActivity"
-const val DEFAULT_QR_GENERATION_RESOLUTION = "300"
+private const val TAG = "MainActivity"
+private const val DEFAULT_QR_GENERATION_RESOLUTION = "300"
 
 class MainActivity : Activity() {
     // This variable holds an ArrayList of WifiEntry objects that each contain a saved wifi SSID and
