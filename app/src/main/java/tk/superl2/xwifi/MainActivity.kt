@@ -59,7 +59,7 @@ class MainActivity : Activity() {
         }
         wifi_ListView.setOnItemLongClickListener { _, _, position, _ ->
             val builder = AlertDialog.Builder(this)
-            builder.setMessage(if (Build.VERSION.SDK_INT >= 24) {
+            builder.setMessage(if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                 Html.fromHtml(
                         "<b>SSID</b>: ${wifiEntries[position].title}<br>" +
                                 (if (wifiEntries[position].getPassword(true) != "") "<b>Password</b>: ${wifiEntries[position].getPassword(true)}<br>" else { "" }) +
@@ -125,7 +125,7 @@ class MainActivity : Activity() {
             if (::wifiEntries.isInitialized) wifiEntries.clear()
             wifiEntrySSIDs.clear()
             try {
-                wifiEntries = if (Build.VERSION.SDK_INT >= 26) readOreoFile() else readNonOreoFile()
+                wifiEntries = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) readOreoFile() else readNonOreoFile()
                 wifiEntries.mapTo(wifiEntrySSIDs) { it.title }
                 Log.v(TAG, "Wifi entries loaded.")
             } catch (e: WifiUnparseableException) {
@@ -144,7 +144,7 @@ class MainActivity : Activity() {
                         runOnUiThread {
                             dialog.dismiss()
                         }
-                        if (Build.VERSION.SDK_INT >= 21) {
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                             finishAndRemoveTask()
                         } else {
                             finish()
