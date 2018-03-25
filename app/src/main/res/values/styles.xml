@@ -1,8 +1,7 @@
-<resources>
-
+<resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Base application theme. -->
-    <style name="AppTheme" parent="android:Theme.Material.Light">
-        <!-- Customize your theme here. -->
+    <style name="AppTheme" parent="Theme.AppCompat.DayNight">
+         <!--Use the light statusbar only when in day/light mode-->
+        <!--<item tools:targetApi="23" name="android:windowLightStatusBar">@bool/is_theme_light</item>-->
     </style>
-
 </resources>

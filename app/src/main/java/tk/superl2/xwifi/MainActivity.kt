@@ -1,6 +1,5 @@
 package tk.superl2.xwifi
 
-import android.app.Activity
 import android.app.AlertDialog
 import android.content.Intent
 import android.content.SharedPreferences
@@ -8,6 +7,8 @@ import android.os.AsyncTask
 import android.os.Build
 import android.os.Bundle
 import android.preference.PreferenceManager
+import android.support.v7.app.AppCompatActivity
+import android.support.v7.app.AppCompatDelegate
 import android.text.Html
 import android.util.Log
 import android.view.Menu
@@ -15,6 +16,7 @@ import android.view.MenuItem
 import android.widget.ArrayAdapter
 import android.widget.ImageView
 import android.widget.ProgressBar
+import android.widget.Toast
 import kotlinx.android.synthetic.main.activity_main.*
 import net.glxn.qrgen.android.QRCode
 import net.glxn.qrgen.core.scheme.Wifi
@@ -22,7 +24,7 @@ import net.glxn.qrgen.core.scheme.Wifi
 private const val TAG = "MainActivity"
 private const val DEFAULT_QR_GENERATION_RESOLUTION = "300"
 
-class MainActivity : Activity() {
+class MainActivity: AppCompatActivity() {
     // This variable holds an ArrayList of WifiEntry objects that each contain a saved wifi SSID and
     // password. It is updated whenever focus returns to the app (onResume).
     private lateinit var wifiEntries: ArrayList<WifiEntry>
@@ -32,11 +34,12 @@ class MainActivity : Activity() {
 
     private lateinit var qrDialog: AlertDialog
     override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
-
         PreferenceManager.setDefaultValues(this, R.xml.preferences, false)
         prefs = PreferenceManager.getDefaultSharedPreferences(this)
+
+        setThemeFromSharedPrefs(prefs)
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
 
         wifi_ListView.adapter = ArrayAdapter(this, android.R.layout.simple_list_item_1, wifiEntrySSIDs)
         wifi_ListView.setOnItemClickListener { _, _, position, _ ->
@@ -48,6 +51,7 @@ class MainActivity : Activity() {
                             .withSsid(wifiEntrySSIDs[position])
                             .withPsk(wifiEntries[position].getPassword(true))
                             .withAuthentication(wifiEntries[position].type.asQRCodeAuth()))
+                    .withColor((if (AppCompatDelegate.getDefaultNightMode() == AppCompatDelegate.MODE_NIGHT_NO) 0xFF000000 else 0xFFE0E0E0).toInt(), 0x00000000) //TODO Better colour handling - atm, the colours may be wrong if the theme is set to system or auto.
                     .withSize(prefs.getString("qr_code_resolution", DEFAULT_QR_GENERATION_RESOLUTION).toInt(), prefs.getString("qr_code_resolution", DEFAULT_QR_GENERATION_RESOLUTION).toInt())
                     .bitmap())
 
@@ -79,6 +83,11 @@ class MainActivity : Activity() {
             qrDialog.show()
             true
         }
+    }
+
+    override fun onRestart() {
+        super.onRestart()
+        recreate()
     }
 
     override fun onResume() {

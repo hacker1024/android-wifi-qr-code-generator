@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string-array name="qr_code_resolutions_entries" >
+    <string-array name="qr_code_resolutions_entries">
         <item>100x100</item>
         <item>150x150</item>
         <item>200x200</item>
@@ -22,7 +22,7 @@
         <item>1000x1000</item>
         <item>1050x1050</item>
     </string-array>
-    <string-array name="qr_code_resolutions_values" >
+    <string-array name="qr_code_resolutions_values">
         <item>100</item>
         <item>150</item>
         <item>200</item>
@@ -43,5 +43,11 @@
         <item>950</item>
         <item>1000</item>
         <item>1050</item>
+    </string-array>
+
+    <string-array name="themes">
+        <item>Light</item>
+        <item>Dark</item>
+        <!--<item>System</item> Disabled for now. TODO Get system theme working. -->
     </string-array>
 </resources>

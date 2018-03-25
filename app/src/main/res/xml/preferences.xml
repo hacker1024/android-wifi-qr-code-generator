@@ -1,17 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
-    <!--<ListPreference-->
-        <!--android:defaultValue="Light"-->
-        <!--android:entries="@array/themes"-->
-        <!--android:entryValues="@array/themes"-->
-        <!--android:key="theme"-->
-        <!--android:summary="%s"-->
-        <!--android:title="App theme" />-->
+    <ListPreference
+        android:defaultValue="Light"
+        android:entries="@array/themes"
+        android:entryValues="@array/themes"
+        android:icon="@drawable/ic_palette_24dp"
+        android:key="theme"
+        android:summary="%s"
+        android:title="App theme" />
     <ListPreference
         android:defaultValue="300"
         android:entries="@array/qr_code_resolutions_entries"
         android:entryValues="@array/qr_code_resolutions_values"
-        android:icon="@drawable/ic_aspect_ratio_black_24dp"
+        android:icon="@drawable/ic_aspect_ratio_24dp"
         android:key="qr_code_resolution"
         android:summary="%s"
         android:title="Resolution of generated QR codes" />

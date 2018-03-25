@@ -1,7 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
+<menu xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <item android:title="@string/item_settings_menu_activity_main" android:checkable="false"
-          android:showAsAction="ifRoom"
-          android:id="@+id/settingsItem" android:icon="@drawable/ic_settings_black_24dp"/>
+    <item
+        android:id="@+id/settingsItem"
+        android:checkable="false"
+        android:icon="@drawable/ic_settings_24dp"
+        android:showAsAction="ifRoom"
+        android:title="@string/item_settings_menu_activity_main"
+        app:showAsAction="ifRoom" />
 </menu>

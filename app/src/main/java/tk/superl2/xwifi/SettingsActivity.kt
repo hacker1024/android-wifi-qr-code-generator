@@ -1,8 +1,14 @@
 package tk.superl2.xwifi
 
+import android.content.SharedPreferences
+import android.os.Build
 import android.os.Bundle
+import android.preference.Preference
 import android.preference.PreferenceActivity
 import android.preference.PreferenceFragment
+import android.support.v7.app.AppCompatActivity
+import android.support.v7.app.AppCompatDelegate
+import android.widget.Toast
 
 
 /**
@@ -15,7 +21,7 @@ import android.preference.PreferenceFragment
  * for design guidelines and the [Settings API Guide](http://developer.android.com/guide/topics/ui/settings.html)
  * for more information on developing a Settings UI.
  */
-class SettingsActivity : PreferenceActivity() {
+class SettingsActivity: AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -24,11 +30,18 @@ class SettingsActivity : PreferenceActivity() {
     }
 }
 
-class SettingsFragment : PreferenceFragment() {
+class SettingsFragment: PreferenceFragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         // Load the preferences from an XML resource
         addPreferencesFromResource(R.xml.preferences)
+
+        findPreference("theme").setOnPreferenceChangeListener { _, newValue ->
+            AppCompatDelegate.setDefaultNightMode(getThemeFromPreferenceString(newValue as String))
+            Toast.makeText(activity.applicationContext, "You may need to restart for the new theme to apply properly.", Toast.LENGTH_SHORT).show()
+            activity.recreate()
+            true
+        }
     }
 }
