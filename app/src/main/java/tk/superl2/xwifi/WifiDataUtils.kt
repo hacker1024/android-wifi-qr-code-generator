@@ -227,7 +227,7 @@ fun readOreoFile(): ArrayList<WifiEntry> {
 private val mLocationList = arrayOf("/data/misc/wifi/wpa_supplicant.conf", "/data/wifi/bcm_supp.conf", "/data/misc/wifi/wpa.conf")
 private const val SSID = "ssid=\""
 private const val WPA_PSK = "psk=\""
-private const val WEP_PSK = "wep_key0=\""
+private const val WEP_PSK = "wep_key0="
 private const val EAP = "eap="
 private const val ENTRY_START = "network={"
 private const val ENTRY_END = "}"
@@ -285,7 +285,7 @@ fun readNonOreoFile(): ArrayList<WifiEntry> {
                     }
                     line.contains(WEP_PSK) -> {
                         type = WifiEntry.Type.WEP
-                        password = line.removeSuffix(ENTRY_END).trim().removePrefix(ENTRY_START).trim().removePrefix(WEP_PSK).removeSuffix("\"")
+                        password = line.removeSuffix(ENTRY_END).trim().removePrefix(ENTRY_START).trim().removePrefix(WEP_PSK)
                     }
                     line.contains(EAP) -> type = WifiEntry.Type.ENTERPRISE
                 }
@@ -302,7 +302,7 @@ fun readNonOreoFile(): ArrayList<WifiEntry> {
                         }
                         line.contains(WEP_PSK) -> {
                             type = WifiEntry.Type.WEP
-                            password = line.removeSuffix(ENTRY_END).trim().removePrefix(WEP_PSK).removeSuffix("\"")
+                            password = line.removeSuffix(ENTRY_END).trim().removePrefix(WEP_PSK)
                         }
                         line.contains(EAP) -> type = WifiEntry.Type.ENTERPRISE
                     }

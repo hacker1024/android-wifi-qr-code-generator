@@ -67,14 +67,14 @@ class MainActivity: AppCompatActivity() {
             builder.setMessage(if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                 Html.fromHtml(
                         "<b>SSID</b>: ${wifiEntries[position].title}<br>" +
-                                (if (wifiEntries[position].getPassword(true) != "") "<b>Password</b>: ${wifiEntries[position].getPassword(true)}<br>" else { "" }) +
+                                (if (wifiEntries[position].getPassword(true) != "") "<b>Password</b>: ${if (wifiEntries[position].type != WifiEntry.Type.WEP) wifiEntries[position].getPassword(true) else wifiEntries[position].getPassword(true).removePrefix("\"").removeSuffix("\"")}<br>" else { "" }) +
                                 "<b>Type</b>: ${wifiEntries[position].type}",
                         Html.FROM_HTML_MODE_LEGACY)
             } else {
                 @Suppress("DEPRECATION")
                 Html.fromHtml(
                         "<b>SSID</b>: ${wifiEntries[position].title}<br>" +
-                                (if (wifiEntries[position].getPassword(true) != "") "<b>Password</b>: ${wifiEntries[position].getPassword(true)}<br>" else { "" }) +
+                                (if (wifiEntries[position].getPassword(true) != "") "<b>Password</b>: ${if (wifiEntries[position].type != WifiEntry.Type.WEP) wifiEntries[position].getPassword(true) else wifiEntries[position].getPassword(true).removePrefix("\"").removeSuffix("\"")}<br>" else { "" }) +
                                 "<b>Type</b>: ${wifiEntries[position].type}"
                 )
             }
