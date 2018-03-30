@@ -58,7 +58,7 @@ class MainActivity: AppCompatActivity() {
 
             val builder = AlertDialog.Builder(this)
             builder.setView(qrCodeView)
-            builder.setPositiveButton("DONE") { dialog, _ -> dialog.dismiss() }
+            builder.setPositiveButton("Done") { dialog, _ -> dialog.dismiss() }
             qrDialog = builder.create()
             qrDialog.show()
         }
@@ -79,7 +79,7 @@ class MainActivity: AppCompatActivity() {
                 )
             }
             )
-            builder.setPositiveButton("DONE") { dialog, _ -> dialog.dismiss() }
+            builder.setPositiveButton("Done") { dialog, _ -> dialog.dismiss() }
             qrDialog = builder.create()
             qrDialog.show()
             true
@@ -144,13 +144,13 @@ class MainActivity: AppCompatActivity() {
                     errorDialogBuilder.setCancelable(false)
                     errorDialogBuilder.setTitle(R.string.error_dialog_title)
                     errorDialogBuilder.setMessage(R.string.error_dialog_message)
-                    errorDialogBuilder.setNeutralButton("RETRY", { dialog, _ ->
+                    errorDialogBuilder.setNeutralButton("Retry", { dialog, _ ->
                         runOnUiThread {
                             dialog.dismiss()
                         }
                         loadWifiEntries()
                     })
-                    errorDialogBuilder.setNegativeButton("EXIT", { dialog, _ ->
+                    errorDialogBuilder.setNegativeButton("Exit", { dialog, _ ->
                         runOnUiThread {
                             dialog.dismiss()
                         }
