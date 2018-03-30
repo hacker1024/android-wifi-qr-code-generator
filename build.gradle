@@ -19,7 +19,10 @@ allprojects {
     repositories {
         google()
         jcenter()
-        maven { url 'https://jitpack.io' }
+        maven {
+            //noinspection GroovyAssignabilityCheck
+            url 'https://jitpack.io'
+        }
     }
 }
 
