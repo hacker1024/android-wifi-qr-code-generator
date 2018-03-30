@@ -39,7 +39,7 @@ class SettingsFragment: PreferenceFragment() {
 
         findPreference("theme").setOnPreferenceChangeListener { _, newValue ->
             AppCompatDelegate.setDefaultNightMode(getThemeFromPreferenceString(newValue as String))
-            Toast.makeText(activity.applicationContext, "You may need to restart for the new theme to apply properly.", Toast.LENGTH_SHORT).show()
+            Toast.makeText(activity.applicationContext, getString(R.string.theme_restart_message), Toast.LENGTH_SHORT).show()
             activity.recreate()
             true
         }
