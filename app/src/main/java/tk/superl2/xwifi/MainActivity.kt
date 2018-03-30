@@ -23,6 +23,7 @@ import net.glxn.qrgen.core.scheme.Wifi
 
 private const val TAG = "MainActivity"
 private const val DEFAULT_QR_GENERATION_RESOLUTION = "300"
+private const val QR_CODE_DIALOG_BOTTOM_IMAGE_MARGIN = 0
 
 class MainActivity: AppCompatActivity() {
     // This variable holds an ArrayList of WifiEntry objects that each contain a saved wifi SSID and
@@ -44,7 +45,7 @@ class MainActivity: AppCompatActivity() {
         wifi_ListView.adapter = ArrayAdapter(this, android.R.layout.simple_list_item_1, wifiEntrySSIDs)
         wifi_ListView.setOnItemClickListener { _, _, position, _ ->
             val qrCodeView = ImageView(this)
-            qrCodeView.setPadding(0, 0, 0, -60)
+            qrCodeView.setPadding(0, 0, 0, QR_CODE_DIALOG_BOTTOM_IMAGE_MARGIN)
             qrCodeView.adjustViewBounds = true
             qrCodeView.setImageBitmap(QRCode
                     .from(Wifi()
