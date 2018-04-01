@@ -17,6 +17,8 @@ import android.widget.ArrayAdapter
 import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.Toast
+import com.applovin.sdk.AppLovinSdk
+import com.mopub.mobileads.MoPubView
 import kotlinx.android.synthetic.main.activity_main.*
 import net.glxn.qrgen.android.QRCode
 import net.glxn.qrgen.core.scheme.Wifi
@@ -41,6 +43,10 @@ class MainActivity: AppCompatActivity() {
         setThemeFromSharedPrefs(prefs)
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        AppLovinSdk.initializeSdk(this)
+        adview.adUnitId = "a6acc0938ffd4af29f71abce19f035ec"
+        adview.loadAd()
 
         wifi_ListView.adapter = ArrayAdapter(this, android.R.layout.simple_list_item_1, wifiEntrySSIDs)
         wifi_ListView.setOnItemClickListener { _, _, position, _ ->
@@ -103,6 +109,11 @@ class MainActivity: AppCompatActivity() {
         loadWifiEntriesInBackgroundTask.cancel(true)
         if (::loadingDialog.isInitialized) loadingDialog.dismiss()
         if (::qrDialog.isInitialized) qrDialog.dismiss()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        adview.destroy()
     }
 
     // This task loads the wifi entries in the background, and notifies the list adapter that the data has changed.

@@ -23,6 +23,10 @@ allprojects {
             //noinspection GroovyAssignabilityCheck
             url 'https://jitpack.io'
         }
+        maven {
+            //noinspection GroovyAssignabilityCheck
+            url 'https://s3.amazonaws.com/moat-sdk-builds'
+        }
     }
 }
 
