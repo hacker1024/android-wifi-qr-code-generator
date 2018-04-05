@@ -95,7 +95,7 @@ class XposedModule: IXposedHookLoadPackage {
                         )
                         builder.setPositiveButton("Done") { dialog, _ -> dialog.dismiss() }
                         qrDialog = builder.create()
-                        (param.thisObject as Fragment).activity.runOnUiThread { qrDialog.show() }
+                        qrDialog.show()
                         param.result = true
                     }
                     MENU_ID_SHOW_QR_CODE -> {
@@ -117,7 +117,7 @@ class XposedModule: IXposedHookLoadPackage {
                         builder.setNeutralButton("Settings") { dialog, _ -> dialog.dismiss(); (param.thisObject as Fragment).startActivity(Intent().setComponent(ComponentName("tk.superl2.xwifi", "tk.superl2.xwifi.SettingsActivity")).putExtra("xposed", true))}
                         builder.setPositiveButton("Done") { dialog, _ -> dialog.dismiss() }
                         qrDialog = builder.create()
-                        (param.thisObject as Fragment).activity.runOnUiThread { qrDialog.show() }
+                        qrDialog.show()
                         param.result = true
                     }
                 }
