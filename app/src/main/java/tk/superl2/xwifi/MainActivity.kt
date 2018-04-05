@@ -1,12 +1,15 @@
 package tk.superl2.xwifi
 
+import android.Manifest
 import android.app.AlertDialog
 import android.content.Intent
-import android.content.SharedPreferences
+import android.content.pm.PackageManager
 import android.os.AsyncTask
 import android.os.Build
 import android.os.Bundle
 import android.preference.PreferenceManager
+import android.support.v4.app.ActivityCompat
+import android.support.v4.content.ContextCompat
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.app.AppCompatDelegate
 import android.text.Html
@@ -18,15 +21,14 @@ import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.Toast
 import com.applovin.sdk.AppLovinSdk
-import com.mopub.mobileads.MoPubView
 import kotlinx.android.synthetic.main.activity_main.*
 import net.glxn.qrgen.android.QRCode
 import net.glxn.qrgen.core.scheme.Wifi
 
 private const val TAG = "MainActivity"
-private const val DEFAULT_QR_GENERATION_RESOLUTION = "300"
-private const val QR_CODE_DIALOG_BOTTOM_IMAGE_MARGIN = 0
 const val PERMISSION_CODE_GROUP_ADS = 0
+
+internal const val QR_CODE_DIALOG_BOTTOM_IMAGE_MARGIN = 0
 
 class MainActivity: AppCompatActivity() {
     // This variable holds an ArrayList of WifiEntry objects that each contain a saved wifi SSID and
@@ -34,12 +36,11 @@ class MainActivity: AppCompatActivity() {
     private lateinit var wifiEntries: ArrayList<WifiEntry>
     private val wifiEntrySSIDs = ArrayList<String>()
     private lateinit var loadWifiEntriesInBackgroundTask: LoadWifiEntriesInBackground
-    private lateinit var prefs: SharedPreferences
-
     private lateinit var qrDialog: AlertDialog
+
     override fun onCreate(savedInstanceState: Bundle?) {
         PreferenceManager.setDefaultValues(this, R.xml.preferences, false)
-        prefs = PreferenceManager.getDefaultSharedPreferences(this)
+        val prefs = PreferenceManager.getDefaultSharedPreferences(this)
 
         setThemeFromSharedPrefs(prefs)
         super.onCreate(savedInstanceState)
@@ -61,7 +62,7 @@ class MainActivity: AppCompatActivity() {
             qrCodeView.setImageBitmap(QRCode
                     .from(Wifi()
                             .withSsid(wifiEntrySSIDs[position])
-                            .withPsk(wifiEntries[position].getPassword(true))
+                            .withPsk(wifiEntries[position].password)
                             .withAuthentication(wifiEntries[position].type.asQRCodeAuth()))
                     .withColor((if (AppCompatDelegate.getDefaultNightMode() != AppCompatDelegate.MODE_NIGHT_YES) 0xFF000000 else 0xFFE0E0E0).toInt(), 0x00000000) //TODO Better colour handling - atm, the colours may be wrong if the theme is set to system or auto.
                     .withSize(prefs.getString("qr_code_resolution", DEFAULT_QR_GENERATION_RESOLUTION).toInt(), prefs.getString("qr_code_resolution", DEFAULT_QR_GENERATION_RESOLUTION).toInt())
@@ -78,14 +79,14 @@ class MainActivity: AppCompatActivity() {
             builder.setMessage(if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                 Html.fromHtml(
                         "<b>SSID</b>: ${wifiEntries[position].title}<br>" +
-                                (if (wifiEntries[position].getPassword(true) != "") "<b>Password</b>: ${if (wifiEntries[position].type != WifiEntry.Type.WEP) wifiEntries[position].getPassword(true) else wifiEntries[position].getPassword(true).removePrefix("\"").removeSuffix("\"")}<br>" else { "" }) +
+                                (if (wifiEntries[position].password != "") "<b>Password</b>: ${if (wifiEntries[position].type != WifiEntry.Type.WEP) wifiEntries[position].password else wifiEntries[position].password.removePrefix("\"").removeSuffix("\"")}<br>" else { "" }) +
                                 "<b>Type</b>: ${wifiEntries[position].type}",
                         Html.FROM_HTML_MODE_LEGACY)
             } else {
                 @Suppress("DEPRECATION")
                 Html.fromHtml(
                         "<b>SSID</b>: ${wifiEntries[position].title}<br>" +
-                                (if (wifiEntries[position].getPassword(true) != "") "<b>Password</b>: ${if (wifiEntries[position].type != WifiEntry.Type.WEP) wifiEntries[position].getPassword(true) else wifiEntries[position].getPassword(true).removePrefix("\"").removeSuffix("\"")}<br>" else { "" }) +
+                                (if (wifiEntries[position].password != "") "<b>Password</b>: ${if (wifiEntries[position].type != WifiEntry.Type.WEP) wifiEntries[position].password else wifiEntries[position].password.removePrefix("\"").removeSuffix("\"")}<br>" else { "" }) +
                                 "<b>Type</b>: ${wifiEntries[position].type}"
                 )
             }
@@ -126,14 +127,14 @@ class MainActivity: AppCompatActivity() {
     private lateinit var errorDialog: AlertDialog
     private lateinit var loadingDialog: AlertDialog
 
-    private inner class LoadWifiEntriesInBackground : AsyncTask<Unit, Unit, Unit>() {
+    private inner class LoadWifiEntriesInBackground: AsyncTask<Unit, Unit, Unit>() {
         override fun onPreExecute() {
             val loadingDialogBuilder = AlertDialog.Builder(this@MainActivity)
             loadingDialogBuilder.setCancelable(false)
             loadingDialogBuilder.setMessage(R.string.wifi_loading_message)
             loadingDialogBuilder.setView(ProgressBar(this@MainActivity))
             loadingDialog = loadingDialogBuilder.create()
-            loadingDialog.show()
+            runOnUiThread { loadingDialog.show() }
         }
 
         override fun doInBackground(vararg params: Unit?) {
@@ -194,7 +195,7 @@ class MainActivity: AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
         return when (item!!.itemId) {
             R.id.settingsItem -> {
-                startActivity(Intent(this, SettingsActivity::class.java))
+                startActivity(Intent(this, SettingsActivity::class.java).putExtra("xposed", false))
                 true
             }
             else -> super.onOptionsItemSelected(item)

@@ -10,6 +10,15 @@ import java.io.IOException
 import java.io.InputStreamReader
 import java.util.*
 
+const val ANDROID_SECURITY_NONE = 0
+const val ANDROID_SECURITY_WEP = 1
+const val ANDROID_SECURITY_PSK = 2
+const val ANDROID_SECURITY_EAP = 3
+const val ANDROID_PSK_UNKNOWN = 0
+const val ANDROID_PSK_WPA = 1
+const val ANDROID_PSK_WPA2 = 2
+const val ANDROID_PSK_WPA_WPA2 = 3
+
 data class WifiEntry(var title: String = "", var password: String = "", var type: Type = Type.NONE) {
     enum class Type {
         WPA {
@@ -28,16 +37,23 @@ data class WifiEntry(var title: String = "", var password: String = "", var type
         };
 
         abstract fun asQRCodeAuth(): Wifi.Authentication
-    }
 
-    fun getPassword(showAll: Boolean): String =
-            if (showAll) {
-                password
-            } else {
-                val fill = CharArray(password.length)
-                Arrays.fill(fill, '*')
-                String(fill)
+        companion object {
+            fun fromAndroidSecurityInt(security: Int, pskType: Int): WifiEntry.Type = when (security) {
+                ANDROID_SECURITY_WEP -> WEP
+                ANDROID_SECURITY_PSK -> {
+                    when (pskType) {
+                        ANDROID_PSK_WPA -> WPA
+                        ANDROID_PSK_WPA2 -> WPA
+                        ANDROID_PSK_WPA_WPA2 -> WPA
+                        else -> WPA
+                    }
+                }
+//                ANDROID_SECURITY_EAP -> EAP
+                else -> NONE
             }
+        }
+    }
 }
 
 private const val mOreoLocation = "/data/misc/wifi/WifiConfigStore.xml"

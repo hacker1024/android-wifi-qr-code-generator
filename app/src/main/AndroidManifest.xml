@@ -19,6 +19,16 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
 
+        <meta-data
+            android:name="xposedmodule"
+            android:value="true" />
+        <meta-data
+            android:name="xposeddescription"
+            android:value="Adds an option to share a saved wifi network as a QR code in the system settings" />
+        <meta-data
+            android:name="xposedminversion"
+            android:value="82" />
+
         <meta-data android:name="applovin.sdk.key"
             android:value="NaAFA-JFGfuBZTVkWkZi7La8TdiU3vrRU_he-0uEfnPDJwyqdVWms6uPkauoUkDzkvbhvUxTFLnTFiNtDvc4_V"  />
 
@@ -32,7 +42,9 @@
         <activity
             android:name=".SettingsActivity"
             android:label="@string/title_activity_settings"
-            android:parentActivityName=".MainActivity">
+            android:parentActivityName=".MainActivity" tools:ignore="UnusedAttribute"
+            android:exported="true"
+            >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="tk.superl2.xwifi.MainActivity" />
@@ -45,6 +57,11 @@
         <activity android:name="com.mopub.mobileads.MraidVideoPlayerActivity" android:configChanges="keyboardHidden|orientation|screenSize"/>
         <activity android:name="com.applovin.adview.AppLovinInterstitialActivity" android:configChanges="orientation|screenSize"/>
         <activity android:name="com.applovin.adview.AppLovinConfirmationActivity" android:configChanges="orientation|screenSize"/>
+
+        <provider
+            android:name=".PreferenceProvider"
+            android:authorities="tk.superl2.xwifi.preferences"
+            android:exported="true" tools:ignore="ExportedContentProvider" />
     </application>
 
 </manifest>
