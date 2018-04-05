@@ -26,6 +26,7 @@ import net.glxn.qrgen.core.scheme.Wifi
 private const val TAG = "MainActivity"
 private const val DEFAULT_QR_GENERATION_RESOLUTION = "300"
 private const val QR_CODE_DIALOG_BOTTOM_IMAGE_MARGIN = 0
+const val PERMISSION_CODE_GROUP_ADS = 0
 
 class MainActivity: AppCompatActivity() {
     // This variable holds an ArrayList of WifiEntry objects that each contain a saved wifi SSID and
@@ -43,6 +44,10 @@ class MainActivity: AppCompatActivity() {
         setThemeFromSharedPrefs(prefs)
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        // Request permissions
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED || ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED)
+            ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.ACCESS_FINE_LOCATION), PERMISSION_CODE_GROUP_ADS)
 
         AppLovinSdk.initializeSdk(this)
         adview.adUnitId = "a6acc0938ffd4af29f71abce19f035ec"
