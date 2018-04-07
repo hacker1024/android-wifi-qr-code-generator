@@ -16,10 +16,7 @@ import android.text.Html
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
-import android.widget.ArrayAdapter
-import android.widget.ImageView
-import android.widget.ProgressBar
-import android.widget.Toast
+import android.widget.*
 import com.applovin.sdk.AppLovinSdk
 import kotlinx.android.synthetic.main.activity_main.*
 import net.glxn.qrgen.android.QRCode
@@ -56,43 +53,42 @@ class MainActivity: AppCompatActivity() {
 
         wifi_ListView.adapter = ArrayAdapter(this, android.R.layout.simple_list_item_1, wifiEntrySSIDs)
         wifi_ListView.setOnItemClickListener { _, _, position, _ ->
-            val qrCodeView = ImageView(this)
-            qrCodeView.setPadding(0, 0, 0, QR_CODE_DIALOG_BOTTOM_IMAGE_MARGIN)
-            qrCodeView.adjustViewBounds = true
-            qrCodeView.setImageBitmap(QRCode
-                    .from(Wifi()
-                            .withSsid(wifiEntrySSIDs[position])
-                            .withPsk(wifiEntries[position].password)
-                            .withAuthentication(wifiEntries[position].type.asQRCodeAuth()))
-                    .withColor((if (AppCompatDelegate.getDefaultNightMode() != AppCompatDelegate.MODE_NIGHT_YES) 0xFF000000 else 0xFFE0E0E0).toInt(), 0x00000000) //TODO Better colour handling - atm, the colours may be wrong if the theme is set to system or auto.
-                    .withSize(prefs.getString("qr_code_resolution", DEFAULT_QR_GENERATION_RESOLUTION).toInt(), prefs.getString("qr_code_resolution", DEFAULT_QR_GENERATION_RESOLUTION).toInt())
-                    .bitmap())
-
-            val builder = AlertDialog.Builder(this)
-            builder.setView(qrCodeView)
-            builder.setPositiveButton("Done") { dialog, _ -> dialog.dismiss() }
-            qrDialog = builder.create()
+            qrDialog = AlertDialog.Builder(this).also { builder ->
+                builder.setView(ImageView(this).also { qrImage ->
+                    qrImage.setPadding(0, 0, 0, QR_CODE_DIALOG_BOTTOM_IMAGE_MARGIN)
+                    qrImage.adjustViewBounds = true
+                    qrImage.setImageBitmap(QRCode
+                            .from(Wifi()
+                                    .withSsid(wifiEntrySSIDs[position])
+                                    .withPsk(wifiEntries[position].password)
+                                    .withAuthentication(wifiEntries[position].type.asQRCodeAuth()))
+                            .withColor((if (AppCompatDelegate.getDefaultNightMode() != AppCompatDelegate.MODE_NIGHT_YES) 0xFF000000 else 0xFFE0E0E0).toInt(), 0x00000000) //TODO Better colour handling - atm, the colours may be wrong if the theme is set to system or auto.
+                            .withSize(prefs.getString("qr_code_resolution", DEFAULT_QR_GENERATION_RESOLUTION).toInt(), prefs.getString("qr_code_resolution", DEFAULT_QR_GENERATION_RESOLUTION).toInt())
+                            .bitmap())
+                })
+                builder.setPositiveButton("Done") { dialog, _ -> dialog.dismiss() }.create()
+            }.create()
             qrDialog.show()
         }
         wifi_ListView.setOnItemLongClickListener { _, _, position, _ ->
-            val builder = AlertDialog.Builder(this)
-            builder.setMessage(if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                Html.fromHtml(
-                        "<b>SSID</b>: ${wifiEntries[position].title}<br>" +
-                                (if (wifiEntries[position].password != "") "<b>Password</b>: ${if (wifiEntries[position].type != WifiEntry.Type.WEP) wifiEntries[position].password else wifiEntries[position].password.removePrefix("\"").removeSuffix("\"")}<br>" else { "" }) +
-                                "<b>Type</b>: ${wifiEntries[position].type}",
-                        Html.FROM_HTML_MODE_LEGACY)
-            } else {
-                @Suppress("DEPRECATION")
-                Html.fromHtml(
-                        "<b>SSID</b>: ${wifiEntries[position].title}<br>" +
-                                (if (wifiEntries[position].password != "") "<b>Password</b>: ${if (wifiEntries[position].type != WifiEntry.Type.WEP) wifiEntries[position].password else wifiEntries[position].password.removePrefix("\"").removeSuffix("\"")}<br>" else { "" }) +
-                                "<b>Type</b>: ${wifiEntries[position].type}"
+            qrDialog = AlertDialog.Builder(this).apply {
+                setMessage(if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                    Html.fromHtml(
+                            "<b>SSID</b>: ${wifiEntries[position].title}<br>" +
+                                    (if (wifiEntries[position].password != "") "<b>Password</b>: ${if (wifiEntries[position].type != WifiEntry.Type.WEP) wifiEntries[position].password else wifiEntries[position].password.removePrefix("\"").removeSuffix("\"")}<br>" else { "" }) +
+                                    "<b>Type</b>: ${wifiEntries[position].type}",
+                            Html.FROM_HTML_MODE_LEGACY)
+                } else {
+                    @Suppress("DEPRECATION")
+                    Html.fromHtml(
+                            "<b>SSID</b>: ${wifiEntries[position].title}<br>" +
+                                    (if (wifiEntries[position].password != "") "<b>Password</b>: ${if (wifiEntries[position].type != WifiEntry.Type.WEP) wifiEntries[position].password else wifiEntries[position].password.removePrefix("\"").removeSuffix("\"")}<br>" else { "" }) +
+                                    "<b>Type</b>: ${wifiEntries[position].type}"
+                    )
+                }
                 )
-            }
-            )
-            builder.setPositiveButton("Done") { dialog, _ -> dialog.dismiss() }
-            qrDialog = builder.create()
+                setPositiveButton("Done") { dialog, _ -> dialog.dismiss() }
+            }.create()
             qrDialog.show()
             true
         }
@@ -129,11 +125,11 @@ class MainActivity: AppCompatActivity() {
 
     private inner class LoadWifiEntriesInBackground: AsyncTask<Unit, Unit, Unit>() {
         override fun onPreExecute() {
-            val loadingDialogBuilder = AlertDialog.Builder(this@MainActivity)
-            loadingDialogBuilder.setCancelable(false)
-            loadingDialogBuilder.setMessage(R.string.wifi_loading_message)
-            loadingDialogBuilder.setView(ProgressBar(this@MainActivity))
-            loadingDialog = loadingDialogBuilder.create()
+            loadingDialog = AlertDialog.Builder(this@MainActivity).apply {
+                setCancelable(false)
+                setMessage(R.string.wifi_loading_message)
+                setView(ProgressBar(this@MainActivity))
+            }.create()
             runOnUiThread { loadingDialog.show() }
         }
 

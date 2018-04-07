@@ -75,48 +75,49 @@ class XposedModule: IXposedHookLoadPackage {
                 }
 
                 when ((param.args[0] as MenuItem).itemId) {
+                    // TODO Use .also() when building dialogs
                     MENU_ID_SHOW_PASSWORD -> {
                         val selectedAccessPoint = searchForWifiEntry(getObjectField(getObjectField(param.thisObject, "mSelectedAccessPoint"), "ssid") as String, getObjectField(getObjectField(param.thisObject, "mSelectedAccessPoint"), "security") as Int)
-                        val builder = AlertDialog.Builder((param.thisObject as Fragment).activity)
-                        builder.setMessage(if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                            Html.fromHtml(
-                                    "<b>SSID</b>: ${selectedAccessPoint.title}<br>" +
-                                            (if (selectedAccessPoint.password != "") "<b>Password</b>: ${if (selectedAccessPoint.type != WifiEntry.Type.WEP) selectedAccessPoint.password else selectedAccessPoint.password.removePrefix("\"").removeSuffix("\"")}<br>" else { "" }) +
-                                            "<b>Type</b>: ${selectedAccessPoint.type}",
-                                    Html.FROM_HTML_MODE_LEGACY)
-                        } else {
-                            @Suppress("DEPRECATION")
-                            Html.fromHtml(
-                                    "<b>SSID</b>: ${selectedAccessPoint.title}<br>" +
-                                            (if (selectedAccessPoint.password != "") "<b>Password</b>: ${if (selectedAccessPoint.type != WifiEntry.Type.WEP) selectedAccessPoint.password else selectedAccessPoint.password.removePrefix("\"").removeSuffix("\"")}<br>" else { "" }) +
-                                            "<b>Type</b>: ${selectedAccessPoint.type}"
+                        qrDialog = AlertDialog.Builder((param.thisObject as Fragment).activity).apply {
+                            setMessage(if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                                Html.fromHtml(
+                                        "<b>SSID</b>: ${selectedAccessPoint.title}<br>" +
+                                                (if (selectedAccessPoint.password != "") "<b>Password</b>: ${if (selectedAccessPoint.type != WifiEntry.Type.WEP) selectedAccessPoint.password else selectedAccessPoint.password.removePrefix("\"").removeSuffix("\"")}<br>" else { "" }) +
+                                                "<b>Type</b>: ${selectedAccessPoint.type}",
+                                        Html.FROM_HTML_MODE_LEGACY)
+                            } else {
+                                @Suppress("DEPRECATION")
+                                Html.fromHtml(
+                                        "<b>SSID</b>: ${selectedAccessPoint.title}<br>" +
+                                                (if (selectedAccessPoint.password != "") "<b>Password</b>: ${if (selectedAccessPoint.type != WifiEntry.Type.WEP) selectedAccessPoint.password else selectedAccessPoint.password.removePrefix("\"").removeSuffix("\"")}<br>" else { "" }) +
+                                                "<b>Type</b>: ${selectedAccessPoint.type}"
+                                )
+                            }
                             )
-                        }
-                        )
-                        builder.setPositiveButton("Done") { dialog, _ -> dialog.dismiss() }
-                        qrDialog = builder.create()
+                            setPositiveButton("Done") { dialog, _ -> dialog.dismiss() }
+                        }.create()
                         qrDialog.show()
                         param.result = true
                     }
                     MENU_ID_SHOW_QR_CODE -> {
                         val selectedAccessPoint = searchForWifiEntry(getObjectField(getObjectField(param.thisObject, "mSelectedAccessPoint"), "ssid") as String, getObjectField(getObjectField(param.thisObject, "mSelectedAccessPoint"), "security") as Int)
                         if (!::prefs.isInitialized) prefs = RemotePreferences(AndroidAppHelper.currentApplication(), "tk.superl2.xwifi.preferences", "tk.superl2.xwifi_preferences")
-                        val qrCodeView = ImageView((param.thisObject as Fragment).activity)
-                        qrCodeView.setPadding(0, 0, 0, QR_CODE_DIALOG_BOTTOM_IMAGE_MARGIN)
-                        qrCodeView.adjustViewBounds = true
-                        qrCodeView.setImageBitmap(QRCode
-                                .from(Wifi()
-                                        .withSsid(selectedAccessPoint.title)
-                                        .withPsk(selectedAccessPoint.password)
-                                        .withAuthentication(selectedAccessPoint.type.asQRCodeAuth()))
-                                .withSize(prefs.getString("qr_code_resolution", DEFAULT_QR_GENERATION_RESOLUTION).toInt(), prefs.getString("qr_code_resolution", DEFAULT_QR_GENERATION_RESOLUTION).toInt())
-                                .bitmap())
-                        val builder = AlertDialog.Builder((param.thisObject as Fragment).activity)
-                        builder.setTitle(selectedAccessPoint.title)
-                        builder.setView(qrCodeView)
-                        builder.setNeutralButton("Settings") { dialog, _ -> dialog.dismiss(); (param.thisObject as Fragment).startActivity(Intent().setComponent(ComponentName("tk.superl2.xwifi", "tk.superl2.xwifi.SettingsActivity")).putExtra("xposed", true))}
-                        builder.setPositiveButton("Done") { dialog, _ -> dialog.dismiss() }
-                        qrDialog = builder.create()
+                        qrDialog = AlertDialog.Builder((param.thisObject as Fragment).activity).also { builder ->
+                            builder.setTitle(selectedAccessPoint.title)
+                            builder.setView(ImageView((param.thisObject as Fragment).activity).also { qrCodeView ->
+                                qrCodeView.setPadding(0, 0, 0, QR_CODE_DIALOG_BOTTOM_IMAGE_MARGIN)
+                                qrCodeView.adjustViewBounds = true
+                                qrCodeView.setImageBitmap(QRCode
+                                        .from(Wifi()
+                                                .withSsid(selectedAccessPoint.title)
+                                                .withPsk(selectedAccessPoint.password)
+                                                .withAuthentication(selectedAccessPoint.type.asQRCodeAuth()))
+                                        .withSize(prefs.getString("qr_code_resolution", DEFAULT_QR_GENERATION_RESOLUTION).toInt(), prefs.getString("qr_code_resolution", DEFAULT_QR_GENERATION_RESOLUTION).toInt())
+                                        .bitmap())
+                            })
+                            builder.setNeutralButton("Settings") { dialog, _ -> dialog.dismiss(); (param.thisObject as Fragment).startActivity(Intent().setComponent(ComponentName("tk.superl2.xwifi", "tk.superl2.xwifi.SettingsActivity")).putExtra("xposed", true)) }
+                            builder.setPositiveButton("Done") { dialog, _ -> dialog.dismiss() }
+                        }.create()
                         qrDialog.show()
                         param.result = true
                     }
@@ -135,11 +136,11 @@ class XposedModule: IXposedHookLoadPackage {
 
     private inner class LoadWifiEntriesInBackground(val activity: Activity): AsyncTask<Unit, Unit, ArrayList<WifiEntry>>() {
         override fun onPreExecute() {
-            val loadingDialogBuilder = AlertDialog.Builder(AndroidAppHelper.currentApplication())
-            loadingDialogBuilder.setCancelable(false)
-            loadingDialogBuilder.setMessage(R.string.wifi_loading_message)
-            loadingDialogBuilder.setView(ProgressBar(AndroidAppHelper.currentApplication()))
-            loadingDialog = loadingDialogBuilder.create()
+            loadingDialog = AlertDialog.Builder(AndroidAppHelper.currentApplication()).apply {
+                setCancelable(false)
+                setMessage(R.string.wifi_loading_message)
+                setView(ProgressBar(AndroidAppHelper.currentApplication()))
+            }.create()
             loadingDialog.show()
         }
 
