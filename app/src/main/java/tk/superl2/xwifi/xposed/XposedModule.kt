@@ -147,8 +147,8 @@ class XposedModule: IXposedHookLoadPackage {
                                     setCancelable(false)
                                     setTitle("The wifi configuration file cannot be found or parsed!")
                                     setMessage("Are you sure this app has root access?\nWithout root access, wifi passwords cannot be retrieved. This may also fail if your wifi configuration file isn't in the normal location.\nYou can still create QR codes for networks with no passwords, and you can also still see wifi networks' details.")
-                                    setNeutralButton("Retry") { dialog, _ -> dialog.dismiss() }
-                                    setNegativeButton("Cancel") {dialog, _ ->  dialog.dismiss(); beforeHookedMethod(param)}
+                                    setNeutralButton("Retry") { dialog, _ ->  dialog.dismiss(); beforeHookedMethod(param) }
+                                    setNegativeButton("Cancel") { dialog, _ -> dialog.dismiss() }
                                     loadingDialog.dismiss()
                                     (param.thisObject as Fragment).activity.runOnUiThread { show() }
                                 }
