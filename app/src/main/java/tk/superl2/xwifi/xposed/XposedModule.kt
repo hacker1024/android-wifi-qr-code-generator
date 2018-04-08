@@ -93,16 +93,22 @@ class XposedModule: IXposedHookLoadPackage {
                             AlertDialog.Builder((param.thisObject as Fragment).activity).apply {
                                 setMessage(if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                                     Html.fromHtml(
-                                            "<b>SSID</b>: ${selectedAccessPoint.title}<br>" +
-                                                    (if (selectedAccessPoint.password != "") "<b>Password</b>: ${if (selectedAccessPoint.type != WifiEntry.Type.WEP) selectedAccessPoint.password else selectedAccessPoint.password.removePrefix("\"").removeSuffix("\"")}<br>" else { "" }) +
-                                                    "<b>Type</b>: ${selectedAccessPoint.type}",
+                                            "<b>SSID:</b> ${selectedAccessPoint.title}<br>" +
+                                                    (if (selectedAccessPoint.password != "") "<b>Password:</b> ${if (selectedAccessPoint.type != WifiEntry.Type.WEP) selectedAccessPoint.password else selectedAccessPoint.password.removePrefix("\"").removeSuffix("\"")}<br>" else { "" }) +
+                                                    "<b>Type:</b> ${selectedAccessPoint.type}<br>" +
+                                                    "<b>Metered:</b> ${if (callMethod(getObjectField(param.thisObject, "mSelectedAccessPoint"), "isMetered") as Boolean) "Yes" else "No"}<br>" +
+                                                    "<b>Saved:</b> ${if (getObjectField(getObjectField(param.thisObject, "mSelectedAccessPoint"), "networkId") == -1) "No" else "Yes"}<br>" +
+                                                    "<b>Connected:</b> ${if (callMethod(getObjectField(param.thisObject, "mSelectedAccessPoint"), "isActive") as Boolean) "Yes" else "No"}",
                                             Html.FROM_HTML_MODE_LEGACY)
                                 } else {
                                     @Suppress("DEPRECATION")
                                     Html.fromHtml(
-                                            "<b>SSID</b>: ${selectedAccessPoint.title}<br>" +
-                                                    (if (selectedAccessPoint.password != "") "<b>Password</b>: ${if (selectedAccessPoint.type != WifiEntry.Type.WEP) selectedAccessPoint.password else selectedAccessPoint.password.removePrefix("\"").removeSuffix("\"")}<br>" else { "" }) +
-                                                    "<b>Type</b>: ${selectedAccessPoint.type}"
+                                            "<b>SSID:</b> ${selectedAccessPoint.title}<br>" +
+                                                    (if (selectedAccessPoint.password != "") "<b>Password:</b> ${if (selectedAccessPoint.type != WifiEntry.Type.WEP) selectedAccessPoint.password else selectedAccessPoint.password.removePrefix("\"").removeSuffix("\"")}<br>" else { "" }) +
+                                                    "<b>Type:</b> ${selectedAccessPoint.type}" +
+                                                    "<b>Metered:</b> ${if (callMethod(getObjectField(param.thisObject, "mSelectedAccessPoint"), "isMetered") as Boolean) "Yes" else "No"}<br>" +
+                                                    "<b>Saved:</b> ${if (getObjectField(getObjectField(param.thisObject, "mSelectedAccessPoint"), "networkId") == -1) "No" else "Yes"}<br>" +
+                                                    "<b>Connected:</b> ${if (callMethod(getObjectField(param.thisObject, "mSelectedAccessPoint"), "isActive") as Boolean) "Yes" else "No"}"
                                     )
                                 }
                                 )
