@@ -66,7 +66,7 @@ class MainActivity: AppCompatActivity() {
                             .withSize(prefs.getString("qr_code_resolution", DEFAULT_QR_GENERATION_RESOLUTION).toInt(), prefs.getString("qr_code_resolution", DEFAULT_QR_GENERATION_RESOLUTION).toInt())
                             .bitmap())
                 })
-                builder.setPositiveButton("Done") { dialog, _ -> dialog.dismiss() }.create()
+                builder.setPositiveButton("Done") { dialog, _ -> dialog.dismiss() }
             }.create()
             qrDialog.show()
         }
