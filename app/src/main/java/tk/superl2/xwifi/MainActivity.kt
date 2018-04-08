@@ -30,7 +30,7 @@ internal const val QR_CODE_DIALOG_BOTTOM_IMAGE_MARGIN = 0
 class MainActivity: AppCompatActivity() {
     // This variable holds an ArrayList of WifiEntry objects that each contain a saved wifi SSID and
     // password. It is updated whenever focus returns to the app (onResume).
-    private lateinit var wifiEntries: ArrayList<WifiEntry>
+    private val wifiEntries = ArrayList<WifiEntry>()
     private val wifiEntrySSIDs = ArrayList<String>()
     private lateinit var loadWifiEntriesInBackgroundTask: LoadWifiEntriesInBackground
     private lateinit var qrDialog: AlertDialog
@@ -145,10 +145,10 @@ class MainActivity: AppCompatActivity() {
         // This function saves wifi entry data into the wifiEntries ArrayList. It also throws up a dialog if the loading fails.
         private fun loadWifiEntries() {
             Log.v(TAG, "Loading wifi entries...")
-            if (::wifiEntries.isInitialized) wifiEntries.clear()
+            wifiEntries.clear()
             wifiEntrySSIDs.clear()
             try {
-                wifiEntries = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) readOreoFile() else readNonOreoFile()
+                wifiEntries.addAll(if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) readOreoFile() else readNonOreoFile())
                 wifiEntries.mapTo(wifiEntrySSIDs) { it.title }
                 Log.v(TAG, "Wifi entries loaded.")
             } catch (e: WifiUnparseableException) {
