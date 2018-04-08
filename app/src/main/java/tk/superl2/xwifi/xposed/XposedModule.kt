@@ -45,6 +45,7 @@ class XposedModule: IXposedHookLoadPackage {
     override fun handleLoadPackage(lpparam: XC_LoadPackage.LoadPackageParam) {
         if (lpparam.packageName != "com.android.settings") return
 
+        // com.android.settings.wifi.WifiSettings.onCreateContextMenu(menu: ContextMenu, view: View, info: ContextMenuInfo)
         findAndHookMethod("com.android.settings.wifi.WifiSettings", lpparam.classLoader, "onCreateContextMenu", ContextMenu::class.java, View::class.java, ContextMenu.ContextMenuInfo::class.java, object: XC_MethodHook() {
             override fun afterHookedMethod(param: MethodHookParam) {
                 if ((param.args[1] as View).tag != null && (param.args[1] as View).tag::class.java == findClass("com.android.settings.wifi.LongPressAccessPointPreference", lpparam.classLoader)) {
@@ -58,6 +59,7 @@ class XposedModule: IXposedHookLoadPackage {
             }
         })
 
+        // com.android.settings.wifi.WifiSettings.onContextItemSelected(item: MenuItem)
         findAndHookMethod("com.android.settings.wifi.WifiSettings", lpparam.classLoader, "onContextItemSelected", MenuItem::class.java, object: XC_MethodHook() {
             override fun beforeHookedMethod(param: MethodHookParam) {
                 fun searchForWifiEntry(ssid: String, security: Int, pskType: Int = ANDROID_PSK_UNKNOWN): WifiEntry {
@@ -125,6 +127,7 @@ class XposedModule: IXposedHookLoadPackage {
             }
         })
 
+        // com.android.settings.wifi.WifiSettings.onPause()
         findAndHookMethod("com.android.settings.wifi.WifiSettings", lpparam.classLoader, "onPause", object: XC_MethodHook() {
             override fun beforeHookedMethod(param: MethodHookParam?) {
                 if (::loadingDialog.isInitialized) loadingDialog.dismiss()
