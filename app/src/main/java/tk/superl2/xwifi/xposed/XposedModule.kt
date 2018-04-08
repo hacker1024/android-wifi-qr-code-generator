@@ -38,7 +38,7 @@ private const val MENU_ID_SHOW_QR_CODE = Menu.FIRST + 11
 class XposedModule: IXposedHookLoadPackage {
 
     override fun handleLoadPackage(lpparam: XC_LoadPackage.LoadPackageParam) {
-        if (lpparam.packageName != "com.android.settings") return
+        if (lpparam.packageName != "com.android.settings" || Build.VERSION.SDK_INT < Build.VERSION_CODES.N) return
 
         // com.android.settings.wifi.WifiSettings.onCreateContextMenu(menu: ContextMenu, view: View, info: ContextMenuInfo)
         findAndHookMethod("com.android.settings.wifi.WifiSettings", lpparam.classLoader, "onCreateContextMenu", ContextMenu::class.java, View::class.java, ContextMenu.ContextMenuInfo::class.java, object: XC_MethodHook() {
