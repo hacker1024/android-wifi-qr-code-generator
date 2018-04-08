@@ -91,7 +91,7 @@ class XposedModule: IXposedHookLoadPackage {
                         loadingDialog.show()
                         launch {
                             val selectedAccessPoint = searchForWifiEntry(getObjectField(getObjectField(param.thisObject, "mSelectedAccessPoint"), "ssid") as String, getObjectField(getObjectField(param.thisObject, "mSelectedAccessPoint"), "security") as Int)
-                            val qrDialogBuilder = AlertDialog.Builder((param.thisObject as Fragment).activity).apply {
+                            AlertDialog.Builder((param.thisObject as Fragment).activity).apply {
                                 setMessage(if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                                     Html.fromHtml(
                                             "<b>SSID</b>: ${selectedAccessPoint.title}<br>" +
@@ -108,9 +108,9 @@ class XposedModule: IXposedHookLoadPackage {
                                 }
                                 )
                                 setPositiveButton("Done") { dialog, _ -> dialog.dismiss() }
+                                loadingDialog.dismiss()
+                                (param.thisObject as Fragment).activity.runOnUiThread { show() }
                             }
-                            loadingDialog.dismiss()
-                            (param.thisObject as Fragment).activity.runOnUiThread { qrDialogBuilder.show() }
                         }
                         param.result = true
                     }
@@ -125,7 +125,7 @@ class XposedModule: IXposedHookLoadPackage {
                             try {
                                 if (!::prefs.isInitialized) prefs = RemotePreferences(AndroidAppHelper.currentApplication(), "tk.superl2.xwifi.preferences", "tk.superl2.xwifi_preferences")
                                 val selectedAccessPoint = searchForWifiEntry(getObjectField(getObjectField(param.thisObject, "mSelectedAccessPoint"), "ssid") as String, getObjectField(getObjectField(param.thisObject, "mSelectedAccessPoint"), "security") as Int)
-                                val qrDialogBuilder = AlertDialog.Builder((param.thisObject as Fragment).activity).also { builder ->
+                                AlertDialog.Builder((param.thisObject as Fragment).activity).also { builder ->
                                     builder.setTitle(selectedAccessPoint.title)
                                     builder.setView(ImageView((param.thisObject as Fragment).activity).also { qrCodeView ->
                                         qrCodeView.setPadding(0, 0, 0, QR_CODE_DIALOG_BOTTOM_IMAGE_MARGIN)
@@ -140,9 +140,9 @@ class XposedModule: IXposedHookLoadPackage {
                                     })
                                     builder.setNeutralButton("Settings") { dialog, _ -> dialog.dismiss(); (param.thisObject as Fragment).startActivity(Intent().setComponent(ComponentName("tk.superl2.xwifi", "tk.superl2.xwifi.SettingsActivity")).putExtra("xposed", true)) }
                                     builder.setPositiveButton("Done") { dialog, _ -> dialog.dismiss() }
+                                    loadingDialog.dismiss()
+                                    (param.thisObject as Fragment).activity.runOnUiThread { builder.show() }
                                 }
-                                loadingDialog.dismiss()
-                                (param.thisObject as Fragment).activity.runOnUiThread { qrDialogBuilder.show() }
                             } catch (e: WifiUnparseableException) {
                                 AlertDialog.Builder((param.thisObject as Fragment).activity).apply {
                                     setCancelable(false)
