@@ -157,13 +157,13 @@ class MainActivity: AppCompatActivity() {
                     errorDialogBuilder.setCancelable(false)
                     errorDialogBuilder.setTitle(R.string.error_dialog_title)
                     errorDialogBuilder.setMessage(R.string.error_dialog_message)
-                    errorDialogBuilder.setNeutralButton("Retry", { dialog, _ ->
+                    errorDialogBuilder.setNeutralButton("Retry") { dialog, _ ->
                         runOnUiThread {
                             dialog.dismiss()
                         }
                         loadWifiEntries()
-                    })
-                    errorDialogBuilder.setNegativeButton("Exit", { dialog, _ ->
+                    }
+                    errorDialogBuilder.setNegativeButton("Exit") { dialog, _ ->
                         runOnUiThread {
                             dialog.dismiss()
                         }
@@ -172,7 +172,7 @@ class MainActivity: AppCompatActivity() {
                         } else {
                             finish()
                         }
-                    })
+                    }
                 }
                 runOnUiThread {
                     errorDialog = errorDialogBuilder.create()
