@@ -96,7 +96,7 @@ class XposedModule: IXposedHookLoadPackage {
                                             "<b>SSID:</b> ${selectedAccessPoint.title}<br>" +
                                                     if (selectedAccessPoint.password != "") "<b>Password:</b> ${if (selectedAccessPoint.type != WifiEntry.Type.WEP) selectedAccessPoint.password else selectedAccessPoint.password.removePrefix("\"").removeSuffix("\"")}<br>" else { "" } +
                                                     "<b>Type:</b> ${selectedAccessPoint.type}<br>" +
-                                                    "<b>Metered:</b> ${if (callMethod(getObjectField(param.thisObject, "mSelectedAccessPoint"), "isMetered") as Boolean) "Yes" else "No"}<br>" +
+                                                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) "<b>Metered:</b> ${if (callMethod(getObjectField(param.thisObject, "mSelectedAccessPoint"), "isMetered") as Boolean) "Yes" else "No"}<br>" else { "" } +
                                                     "<b>Saved:</b> ${if (getObjectField(getObjectField(param.thisObject, "mSelectedAccessPoint"), "networkId") == -1) "No" else "Yes"}<br>" +
                                                     "<b>Connected:</b> ${if (callMethod(getObjectField(param.thisObject, "mSelectedAccessPoint"), "isActive") as Boolean) "Yes" else "No"}",
                                             Html.FROM_HTML_MODE_LEGACY)
@@ -106,7 +106,7 @@ class XposedModule: IXposedHookLoadPackage {
                                             "<b>SSID:</b> ${selectedAccessPoint.title}<br>" +
                                                     if (selectedAccessPoint.password != "") "<b>Password:</b> ${if (selectedAccessPoint.type != WifiEntry.Type.WEP) selectedAccessPoint.password else selectedAccessPoint.password.removePrefix("\"").removeSuffix("\"")}<br>" else { "" } +
                                                     "<b>Type:</b> ${selectedAccessPoint.type}" +
-                                                    "<b>Metered:</b> ${if (callMethod(getObjectField(param.thisObject, "mSelectedAccessPoint"), "isMetered") as Boolean) "Yes" else "No"}<br>" +
+                                                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) "<b>Metered:</b> ${if (callMethod(getObjectField(param.thisObject, "mSelectedAccessPoint"), "isMetered") as Boolean) "Yes" else "No"}<br>" else { "" } +
                                                     "<b>Saved:</b> ${if (getObjectField(getObjectField(param.thisObject, "mSelectedAccessPoint"), "networkId") == -1) "No" else "Yes"}<br>" +
                                                     "<b>Connected:</b> ${if (callMethod(getObjectField(param.thisObject, "mSelectedAccessPoint"), "isActive") as Boolean) "Yes" else "No"}"
                                     )
