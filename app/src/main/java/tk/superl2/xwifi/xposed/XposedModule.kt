@@ -36,7 +36,6 @@ private const val MENU_ID_SHOW_PASSWORD = Menu.FIRST + 10
 private const val MENU_ID_SHOW_QR_CODE = Menu.FIRST + 11
 
 class XposedModule: IXposedHookLoadPackage {
-    lateinit var prefs: RemotePreferences
 
     override fun handleLoadPackage(lpparam: XC_LoadPackage.LoadPackageParam) {
         if (lpparam.packageName != "com.android.settings") return
@@ -123,7 +122,7 @@ class XposedModule: IXposedHookLoadPackage {
                         loadingDialog.show()
                         launch {
                             try {
-                                if (!::prefs.isInitialized) prefs = RemotePreferences(AndroidAppHelper.currentApplication(), "tk.superl2.xwifi.preferences", "tk.superl2.xwifi_preferences")
+                                val prefs = RemotePreferences(AndroidAppHelper.currentApplication(), "tk.superl2.xwifi.preferences", "tk.superl2.xwifi_preferences")
                                 val selectedAccessPoint = searchForWifiEntry(getObjectField(getObjectField(param.thisObject, "mSelectedAccessPoint"), "ssid") as String, getObjectField(getObjectField(param.thisObject, "mSelectedAccessPoint"), "security") as Int)
                                 AlertDialog.Builder((param.thisObject as Fragment).activity).also { builder ->
                                     builder.setTitle(selectedAccessPoint.title)
