@@ -47,7 +47,7 @@ class XposedModule: IXposedHookLoadPackage {
                     if (getIntField(getObjectField(param.thisObject, "mSelectedAccessPoint"), "security") != ANDROID_SECURITY_EAP) {
                         (param.args[0] as ContextMenu).add(Menu.NONE, MENU_ID_SHOW_PASSWORD, 0, "Network information")
                     }
-                    if (getObjectField(getObjectField(param.thisObject, "mSelectedAccessPoint"), "networkId") as Int != -1 && getIntField(getObjectField(param.thisObject, "mSelectedAccessPoint"), "security") != ANDROID_SECURITY_EAP) {
+                    if ((getIntField(getObjectField(param.thisObject, "mSelectedAccessPoint"), "networkId") != -1 || getIntField(getObjectField(param.thisObject, "mSelectedAccessPoint"), "security") == ANDROID_SECURITY_NONE) && getIntField(getObjectField(param.thisObject, "mSelectedAccessPoint"), "security") != ANDROID_SECURITY_EAP) {
                         (param.args[0] as ContextMenu).add(Menu.NONE, MENU_ID_SHOW_QR_CODE, 0, "Show QR code")
                     }
                 }
