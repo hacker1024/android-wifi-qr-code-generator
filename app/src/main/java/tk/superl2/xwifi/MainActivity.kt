@@ -75,14 +75,14 @@ class MainActivity: AppCompatActivity() {
                 setMessage(if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                     Html.fromHtml(
                             "<b>SSID:</b> ${wifiEntries[position].title}<br>" +
-                                    (if (wifiEntries[position].password != "") "<b>Password:</b> ${if (wifiEntries[position].type != WifiEntry.Type.WEP) wifiEntries[position].password else wifiEntries[position].password.removePrefix("\"").removeSuffix("\"")}<br>" else { "" }) +
+                                    if (wifiEntries[position].password != "") "<b>Password:</b> ${if (wifiEntries[position].type != WifiEntry.Type.WEP) wifiEntries[position].password else wifiEntries[position].password.removePrefix("\"").removeSuffix("\"")}<br>" else { "" } +
                                     "<b>Type:</b> ${wifiEntries[position].type}",
                             Html.FROM_HTML_MODE_LEGACY)
                 } else {
                     @Suppress("DEPRECATION")
                     Html.fromHtml(
                             "<b>SSID:</b> ${wifiEntries[position].title}<br>" +
-                                    (if (wifiEntries[position].password != "") "<b>Password:</b> ${if (wifiEntries[position].type != WifiEntry.Type.WEP) wifiEntries[position].password else wifiEntries[position].password.removePrefix("\"").removeSuffix("\"")}<br>" else { "" }) +
+                                    if (wifiEntries[position].password != "") "<b>Password:</b> ${if (wifiEntries[position].type != WifiEntry.Type.WEP) wifiEntries[position].password else wifiEntries[position].password.removePrefix("\"").removeSuffix("\"")}<br>" else { "" } +
                                     "<b>Type:</b> ${wifiEntries[position].type}"
                     )
                 }
