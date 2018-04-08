@@ -130,7 +130,7 @@ class MainActivity: AppCompatActivity() {
                 setMessage(R.string.wifi_loading_message)
                 setView(ProgressBar(this@MainActivity))
             }.create()
-            runOnUiThread { loadingDialog.show() }
+            loadingDialog.show()
         }
 
         override fun doInBackground(vararg params: Unit?) {
@@ -139,7 +139,7 @@ class MainActivity: AppCompatActivity() {
 
         override fun onPostExecute(result: Unit?) {
             (wifi_ListView.adapter as ArrayAdapter<*>).notifyDataSetChanged()
-            runOnUiThread { loadingDialog.dismiss() }
+            loadingDialog.dismiss()
         }
 
         // This function saves wifi entry data into the wifiEntries ArrayList. It also throws up a dialog if the loading fails.
