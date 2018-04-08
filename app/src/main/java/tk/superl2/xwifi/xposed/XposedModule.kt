@@ -14,6 +14,7 @@ import android.view.MenuItem
 import android.view.View
 import android.widget.ImageView
 import android.widget.ProgressBar
+import android.widget.Toast
 import com.crossbowffs.remotepreferences.RemotePreferences
 import de.robv.android.xposed.IXposedHookLoadPackage
 import de.robv.android.xposed.XC_MethodHook
@@ -58,16 +59,25 @@ class XposedModule: IXposedHookLoadPackage {
         findAndHookMethod("com.android.settings.wifi.WifiSettings", lpparam.classLoader, "onContextItemSelected", MenuItem::class.java, object: XC_MethodHook() {
             override fun beforeHookedMethod(param: MethodHookParam) {
                 fun searchForWifiEntry(ssid: String, security: Int, pskType: Int = ANDROID_PSK_UNKNOWN): WifiEntry {
+                    Log.v(TAG, "Selected access point: ${getObjectField(param.thisObject, "mSelectedAccessPoint")}")
                     if (getObjectField(getObjectField(param.thisObject, "mSelectedAccessPoint"), "networkId") as Int == -1) {
                         return WifiEntry(ssid, "", WifiEntry.Type.fromAndroidSecurityInt(getIntField(getObjectField(param.thisObject, "mSelectedAccessPoint"), "security"), getIntField(getObjectField(param.thisObject, "mSelectedAccessPoint"), "pskType")))
                     } else {
-                        (if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) readOreoFile() else readNonOreoFile()).forEach {
-                            if (it.title == ssid && it.type == WifiEntry.Type.fromAndroidSecurityInt(security, pskType)) {
-                                return it
+                        try {
+                            (if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) readOreoFile() else readNonOreoFile()).forEach {
+                                if (it.title == ssid && it.type == WifiEntry.Type.fromAndroidSecurityInt(security, pskType)) {
+                                    return it
+                                }
+                            }
+                        } catch (e: WifiUnparseableException) {
+                            if ((param.args[0] as MenuItem).itemId == MENU_ID_SHOW_PASSWORD || getIntField(getObjectField(param.thisObject, "mSelectedAccessPoint"), "security") == ANDROID_SECURITY_NONE) {
+                                (param.thisObject as Fragment).activity.runOnUiThread { Toast.makeText((param.thisObject as Fragment).activity, "The wifi configuration file cannot be found or parsed! Are you sure this app has root access? Can't show password.", Toast.LENGTH_LONG).show() }
+                            } else {
+                                throw WifiUnparseableException()
                             }
                         }
                     }
-                    Log.e(TAG, "Network \"$ssid\" is marked saved, but cannot be found in saved networks file!")
+                    Log.w(TAG, "Network \"$ssid\" is marked saved, but cannot be found in saved networks file!")
                     return WifiEntry(ssid, "", WifiEntry.Type.fromAndroidSecurityInt(getIntField(getObjectField(param.thisObject, "mSelectedAccessPoint"), "security"), getIntField(getObjectField(param.thisObject, "mSelectedAccessPoint"), "pskType")))
                 }
 
@@ -112,26 +122,38 @@ class XposedModule: IXposedHookLoadPackage {
                         }.create()
                         loadingDialog.show()
                         launch {
-                            if (!::prefs.isInitialized) prefs = RemotePreferences(AndroidAppHelper.currentApplication(), "tk.superl2.xwifi.preferences", "tk.superl2.xwifi_preferences")
-                            val selectedAccessPoint = searchForWifiEntry(getObjectField(getObjectField(param.thisObject, "mSelectedAccessPoint"), "ssid") as String, getObjectField(getObjectField(param.thisObject, "mSelectedAccessPoint"), "security") as Int)
-                            val qrDialogBuilder = AlertDialog.Builder((param.thisObject as Fragment).activity).also { builder ->
-                                builder.setTitle(selectedAccessPoint.title)
-                                builder.setView(ImageView((param.thisObject as Fragment).activity).also { qrCodeView ->
-                                    qrCodeView.setPadding(0, 0, 0, QR_CODE_DIALOG_BOTTOM_IMAGE_MARGIN)
-                                    qrCodeView.adjustViewBounds = true
-                                    qrCodeView.setImageBitmap(QRCode
-                                            .from(Wifi()
-                                                    .withSsid(selectedAccessPoint.title)
-                                                    .withPsk(selectedAccessPoint.password)
-                                                    .withAuthentication(selectedAccessPoint.type.asQRCodeAuth()))
-                                            .withSize(prefs.getString("qr_code_resolution", DEFAULT_QR_GENERATION_RESOLUTION).toInt(), prefs.getString("qr_code_resolution", DEFAULT_QR_GENERATION_RESOLUTION).toInt())
-                                            .bitmap())
-                                })
-                                builder.setNeutralButton("Settings") { dialog, _ -> dialog.dismiss(); (param.thisObject as Fragment).startActivity(Intent().setComponent(ComponentName("tk.superl2.xwifi", "tk.superl2.xwifi.SettingsActivity")).putExtra("xposed", true)) }
-                                builder.setPositiveButton("Done") { dialog, _ -> dialog.dismiss() }
+                            try {
+                                if (!::prefs.isInitialized) prefs = RemotePreferences(AndroidAppHelper.currentApplication(), "tk.superl2.xwifi.preferences", "tk.superl2.xwifi_preferences")
+                                val selectedAccessPoint = searchForWifiEntry(getObjectField(getObjectField(param.thisObject, "mSelectedAccessPoint"), "ssid") as String, getObjectField(getObjectField(param.thisObject, "mSelectedAccessPoint"), "security") as Int)
+                                val qrDialogBuilder = AlertDialog.Builder((param.thisObject as Fragment).activity).also { builder ->
+                                    builder.setTitle(selectedAccessPoint.title)
+                                    builder.setView(ImageView((param.thisObject as Fragment).activity).also { qrCodeView ->
+                                        qrCodeView.setPadding(0, 0, 0, QR_CODE_DIALOG_BOTTOM_IMAGE_MARGIN)
+                                        qrCodeView.adjustViewBounds = true
+                                        qrCodeView.setImageBitmap(QRCode
+                                                .from(Wifi()
+                                                        .withSsid(selectedAccessPoint.title)
+                                                        .withPsk(selectedAccessPoint.password)
+                                                        .withAuthentication(selectedAccessPoint.type.asQRCodeAuth()))
+                                                .withSize(prefs.getString("qr_code_resolution", DEFAULT_QR_GENERATION_RESOLUTION).toInt(), prefs.getString("qr_code_resolution", DEFAULT_QR_GENERATION_RESOLUTION).toInt())
+                                                .bitmap())
+                                    })
+                                    builder.setNeutralButton("Settings") { dialog, _ -> dialog.dismiss(); (param.thisObject as Fragment).startActivity(Intent().setComponent(ComponentName("tk.superl2.xwifi", "tk.superl2.xwifi.SettingsActivity")).putExtra("xposed", true)) }
+                                    builder.setPositiveButton("Done") { dialog, _ -> dialog.dismiss() }
+                                }
+                                loadingDialog.dismiss()
+                                (param.thisObject as Fragment).activity.runOnUiThread { qrDialogBuilder.show() }
+                            } catch (e: WifiUnparseableException) {
+                                AlertDialog.Builder((param.thisObject as Fragment).activity).apply {
+                                    setCancelable(false)
+                                    setTitle("The wifi configuration file cannot be found or parsed!")
+                                    setMessage("Are you sure this app has root access?\nWithout root access, wifi passwords cannot be retrieved. This may also fail if your wifi configuration file isn't in the normal location.\nYou can still create QR codes for networks with no passwords, and you can also still see wifi networks' details.")
+                                    setNeutralButton("Retry") { dialog, _ -> dialog.dismiss() }
+                                    setNegativeButton("Cancel") {dialog, _ ->  dialog.dismiss(); beforeHookedMethod(param)}
+                                    loadingDialog.dismiss()
+                                    (param.thisObject as Fragment).activity.runOnUiThread { show() }
+                                }
                             }
-                            loadingDialog.dismiss()
-                            (param.thisObject as Fragment).activity.runOnUiThread { qrDialogBuilder.show() }
                         }
                         param.result = true
                     }
