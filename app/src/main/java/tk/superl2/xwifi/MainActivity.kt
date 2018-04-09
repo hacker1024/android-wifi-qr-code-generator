@@ -17,8 +17,9 @@ import android.text.Html
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
-import android.widget.*
-import com.applovin.sdk.AppLovinSdk
+import android.widget.ArrayAdapter
+import android.widget.ImageView
+import android.widget.ProgressBar
 import kotlinx.android.synthetic.main.activity_main.*
 import net.glxn.qrgen.android.QRCode
 import net.glxn.qrgen.core.scheme.Wifi
@@ -63,7 +64,6 @@ class MainActivity: AppCompatActivity() {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED || ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED)
             ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.ACCESS_FINE_LOCATION), PERMISSION_CODE_GROUP_ADS)
 
-        AppLovinSdk.initializeSdk(this)
         adview.adUnitId = "a6acc0938ffd4af29f71abce19f035ec"
         adview.loadAd()
 
