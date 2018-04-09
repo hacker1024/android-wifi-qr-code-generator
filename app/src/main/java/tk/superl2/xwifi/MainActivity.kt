@@ -69,11 +69,11 @@ class MainActivity: AppCompatActivity() {
 
         wifi_ListView.adapter = ArrayAdapter(this, android.R.layout.simple_list_item_1, wifiEntrySSIDs)
         wifi_ListView.setOnItemClickListener { _, _, position, _ ->
-            qrDialog = AlertDialog.Builder(this).also { builder ->
-                builder.setView(ImageView(this).also { qrImage ->
-                    qrImage.setPadding(0, 0, 0, QR_CODE_DIALOG_BOTTOM_IMAGE_MARGIN)
-                    qrImage.adjustViewBounds = true
-                    qrImage.setImageBitmap(QRCode
+            qrDialog = AlertDialog.Builder(this).apply {
+                setView(ImageView(this@MainActivity).apply {
+                    setPadding(0, 0, 0, QR_CODE_DIALOG_BOTTOM_IMAGE_MARGIN)
+                    adjustViewBounds = true
+                    setImageBitmap(QRCode
                             .from(Wifi()
                                     .withSsid(wifiEntrySSIDs[position])
                                     .withPsk(wifiEntries[position].password)
@@ -82,7 +82,7 @@ class MainActivity: AppCompatActivity() {
                             .withSize(prefs.getString("qr_code_resolution", DEFAULT_QR_CODE_RESOLUTION).toInt(), prefs.getString("qr_code_resolution", DEFAULT_QR_CODE_RESOLUTION).toInt())
                             .bitmap())
                 })
-                builder.setPositiveButton("Done") { dialog, _ -> dialog.dismiss() }
+                setPositiveButton("Done") { dialog, _ -> dialog.dismiss() }
             }.create()
             qrDialog.show()
         }

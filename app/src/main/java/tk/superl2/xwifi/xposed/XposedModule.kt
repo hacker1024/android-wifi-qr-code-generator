@@ -130,12 +130,12 @@ class XposedModule: IXposedHookLoadPackage {
                             try {
                                 val prefs = RemotePreferences(AndroidAppHelper.currentApplication(), "tk.superl2.xwifi.preferences", "tk.superl2.xwifi_preferences")
                                 val selectedAccessPoint = searchForWifiEntry(getObjectField(getObjectField(param.thisObject, "mSelectedAccessPoint"), "ssid") as String, getObjectField(getObjectField(param.thisObject, "mSelectedAccessPoint"), "security") as Int)
-                                AlertDialog.Builder((param.thisObject as Fragment).activity).also { builder ->
-                                    builder.setTitle(selectedAccessPoint.title)
-                                    builder.setView(ImageView((param.thisObject as Fragment).activity).also { qrCodeView ->
-                                        qrCodeView.setPadding(0, 0, 0, QR_CODE_DIALOG_BOTTOM_IMAGE_MARGIN)
-                                        qrCodeView.adjustViewBounds = true
-                                        qrCodeView.setImageBitmap(QRCode
+                                AlertDialog.Builder((param.thisObject as Fragment).activity).apply {
+                                    setTitle(selectedAccessPoint.title)
+                                    setView(ImageView((param.thisObject as Fragment).activity).apply {
+                                        setPadding(0, 0, 0, QR_CODE_DIALOG_BOTTOM_IMAGE_MARGIN)
+                                        adjustViewBounds = true
+                                        setImageBitmap(QRCode
                                                 .from(Wifi()
                                                         .withSsid(selectedAccessPoint.title)
                                                         .withPsk(selectedAccessPoint.password)
@@ -143,10 +143,10 @@ class XposedModule: IXposedHookLoadPackage {
                                                 .withSize(prefs.getString("qr_code_resolution", DEFAULT_QR_CODE_RESOLUTION).toInt(), prefs.getString("qr_code_resolution", DEFAULT_QR_CODE_RESOLUTION).toInt())
                                                 .bitmap())
                                     })
-                                    builder.setNeutralButton("Settings") { dialog, _ -> dialog.dismiss(); (param.thisObject as Fragment).startActivity(Intent().setComponent(ComponentName("tk.superl2.xwifi", "tk.superl2.xwifi.SettingsActivity")).putExtra("xposed", true)) }
-                                    builder.setPositiveButton("Done") { dialog, _ -> dialog.dismiss() }
+                                    setNeutralButton("Settings") { dialog, _ -> dialog.dismiss(); (param.thisObject as Fragment).startActivity(Intent().setComponent(ComponentName("tk.superl2.xwifi", "tk.superl2.xwifi.SettingsActivity")).putExtra("xposed", true)) }
+                                    setPositiveButton("Done") { dialog, _ -> dialog.dismiss() }
                                     loadingDialog.dismiss()
-                                    (param.thisObject as Fragment).activity.runOnUiThread { builder.show() }
+                                    (param.thisObject as Fragment).activity.runOnUiThread { show() }
                                 }
                             } catch (e: WifiUnparseableException) {
                                 AlertDialog.Builder((param.thisObject as Fragment).activity).apply {
