@@ -3,6 +3,12 @@
     xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
+        android:id="@+id/app_bar_search"
+        android:icon="@drawable/ic_search_24dp"
+        android:title="@string/item_search_menu_activity_main"
+        app:showAsAction="always"
+        app:actionViewClass="android.widget.SearchView" />
+    <item
         android:id="@+id/sortItem"
         android:icon="@drawable/ic_compare_arrows_24dp"
         android:title="@string/item_sort_menu_activity_main"

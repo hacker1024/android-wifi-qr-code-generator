@@ -2,6 +2,8 @@ package tk.superl2.xwifi
 
 import android.Manifest
 import android.app.AlertDialog
+import android.app.SearchManager
+import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.content.pm.PackageManager
@@ -17,9 +19,7 @@ import android.text.Html
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
-import android.widget.ArrayAdapter
-import android.widget.ImageView
-import android.widget.ProgressBar
+import android.widget.*
 import kotlinx.android.synthetic.main.activity_main.*
 import net.glxn.qrgen.android.QRCode
 import net.glxn.qrgen.core.scheme.Wifi
@@ -68,16 +68,17 @@ class MainActivity: AppCompatActivity() {
         adview.loadAd()
 
         wifi_ListView.adapter = ArrayAdapter(this, android.R.layout.simple_list_item_1, wifiEntrySSIDs)
-        wifi_ListView.setOnItemClickListener { _, _, position, _ ->
+        wifi_ListView.setOnItemClickListener { _, view, _, _ ->
+            val selectedWifiEntry = wifiEntries.find {it.title == (view as TextView).text}
             qrDialog = AlertDialog.Builder(this).apply {
                 setView(ImageView(this@MainActivity).apply {
                     setPadding(0, 0, 0, QR_CODE_DIALOG_BOTTOM_IMAGE_MARGIN)
                     adjustViewBounds = true
                     setImageBitmap(QRCode
                             .from(Wifi()
-                                    .withSsid(wifiEntrySSIDs[position])
-                                    .withPsk(wifiEntries[position].password)
-                                    .withAuthentication(wifiEntries[position].type.asQRCodeAuth()))
+                                    .withSsid(selectedWifiEntry!!.title)
+                                    .withPsk(selectedWifiEntry.password)
+                                    .withAuthentication(selectedWifiEntry.type.asQRCodeAuth()))
                             .withColor((if (AppCompatDelegate.getDefaultNightMode() != AppCompatDelegate.MODE_NIGHT_YES) 0xFF000000 else 0xFFE0E0E0).toInt(), 0x00000000) //TODO Better colour handling - atm, the colours may be wrong if the theme is set to system or auto.
                             .withSize(prefs.getString("qr_code_resolution", DEFAULT_QR_CODE_RESOLUTION).toInt(), prefs.getString("qr_code_resolution", DEFAULT_QR_CODE_RESOLUTION).toInt())
                             .bitmap())
@@ -86,20 +87,21 @@ class MainActivity: AppCompatActivity() {
             }.create()
             qrDialog.show()
         }
-        wifi_ListView.setOnItemLongClickListener { _, _, position, _ ->
+        wifi_ListView.setOnItemLongClickListener { _, view, _, _ ->
+            val selectedWifiEntry = wifiEntries.find {it.title == (view as TextView).text}
             qrDialog = AlertDialog.Builder(this).apply {
                 setMessage(if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                     Html.fromHtml(
-                            "<b>SSID:</b> ${wifiEntries[position].title}<br>" +
-                                    if (wifiEntries[position].password != "") "<b>Password:</b> ${if (wifiEntries[position].type != WifiEntry.Type.WEP) wifiEntries[position].password else wifiEntries[position].password.removePrefix("\"").removeSuffix("\"")}<br>" else { "" } +
-                                    "<b>Type:</b> ${wifiEntries[position].type}",
+                            "<b>SSID:</b> ${selectedWifiEntry?.title ?: "<i>ERROR</i>"}<br>" +
+                                    if (selectedWifiEntry?.password ?: "</i>ERROR</i>" != "") "<b>Password:</b> ${if (selectedWifiEntry?.type ?: WifiEntry.Type.NONE != WifiEntry.Type.WEP) selectedWifiEntry?.password ?: "</i>ERROR</i>" else selectedWifiEntry?.password?.removePrefix("\"")?.removeSuffix("\"") ?: "</i>ERROR</i>"}<br>"  else { "" } +
+                                    "<b>Type:</b> ${selectedWifiEntry?.type ?: "</i>ERROR</i>"}",
                             Html.FROM_HTML_MODE_LEGACY)
                 } else {
                     @Suppress("DEPRECATION")
                     Html.fromHtml(
-                            "<b>SSID:</b> ${wifiEntries[position].title}<br>" +
-                                    if (wifiEntries[position].password != "") "<b>Password:</b> ${if (wifiEntries[position].type != WifiEntry.Type.WEP) wifiEntries[position].password else wifiEntries[position].password.removePrefix("\"").removeSuffix("\"")}<br>" else { "" } +
-                                    "<b>Type:</b> ${wifiEntries[position].type}"
+                            "<b>SSID:</b> ${selectedWifiEntry?.title ?: "<i>ERROR</i>"}<br>" +
+                                    if (selectedWifiEntry?.password ?: "</i>ERROR</i>" != "") "<b>Password:</b> ${if (selectedWifiEntry?.type ?: WifiEntry.Type.NONE != WifiEntry.Type.WEP) selectedWifiEntry?.password ?: "</i>ERROR</i>" else selectedWifiEntry?.password?.removePrefix("\"")?.removeSuffix("\"") ?: "</i>ERROR</i>"}<br>"  else { "" } +
+                                    "<b>Type:</b> ${selectedWifiEntry?.type ?: "</i>ERROR</i>"}"
                     )
                 }
                 )
@@ -202,6 +204,28 @@ class MainActivity: AppCompatActivity() {
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.menu_activity_main, menu)
+
+        (menu.findItem(R.id.app_bar_search).actionView as SearchView).apply {
+            setSearchableInfo((getSystemService(Context.SEARCH_SERVICE) as SearchManager).getSearchableInfo(componentName))
+            setOnSearchClickListener {
+                menu.findItem(R.id.sortItem).isVisible = false
+            }
+            setOnQueryTextListener(object: SearchView.OnQueryTextListener {
+                override fun onQueryTextSubmit(query: String?) = false
+
+                override fun onQueryTextChange(newText: String): Boolean {
+                    (wifi_ListView.adapter as ArrayAdapter<*>).filter.filter(newText)
+                    return true
+                }
+            })
+            setOnCloseListener {
+                wifi_ListView.adapter = ArrayAdapter(this@MainActivity, android.R.layout.simple_list_item_1, wifiEntrySSIDs)
+                menu.findItem(R.id.sortItem).isVisible = true
+                invalidateOptionsMenu()
+                false
+            }
+        }
+
         return true
     }
 
