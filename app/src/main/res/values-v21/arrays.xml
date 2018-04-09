@@ -1,60 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <string-array name="qr_code_resolutions_entries">
-        <item>100x100</item>
-        <item>150x150</item>
-        <item>200x200</item>
-        <item>250x250</item>
-        <item>300x300</item>
-        <item>350x350</item>
-        <item>400x400</item>
-        <item>450x450</item>
-        <item>500x500</item>
-        <item>550x550</item>
-        <item>600x600</item>
-        <item>650x650</item>
-        <item>700x700</item>
-        <item>750x750</item>
-        <item>800x800</item>
-        <item>850x850</item>
-        <item>900x900</item>
-        <item>950x950</item>
-        <item>1000x1000</item>
-        <item>1050x1050</item>
-    </string-array>
-    <string-array name="qr_code_resolutions_values">
-        <item>100</item>
-        <item>150</item>
-        <item>200</item>
-        <item>250</item>
-        <item>300</item>
-        <item>350</item>
-        <item>400</item>
-        <item>450</item>
-        <item>500</item>
-        <item>550</item>
-        <item>600</item>
-        <item>650</item>
-        <item>700</item>
-        <item>750</item>
-        <item>800</item>
-        <item>850</item>
-        <item>900</item>
-        <item>950</item>
-        <item>1000</item>
-        <item>1050</item>
-    </string-array>
-
     <string-array name="themes" tools:ignore="InconsistentArrays">
         <item>Light</item>
         <item>Dark</item>
         <!--<item>System</item> &lt;!&ndash;Disabled for now. TODO Get system theme working. &ndash;&gt;-->
-    </string-array>
-
-    <string-array name="sorting">
-        <item>A-Z</item>
-    </string-array>
-    <string-array name="sorting_values">
-        <item>alphabetical</item>
     </string-array>
 </resources>
