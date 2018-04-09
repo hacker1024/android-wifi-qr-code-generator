@@ -4,6 +4,7 @@
     <PreferenceCategory
         android:iconSpaceReserved="true"
         android:title="Display"
+        android:key="display"
         tools:ignore="UnusedAttribute">
         <ListPreference
             android:defaultValue="Light"
@@ -26,6 +27,7 @@
     <PreferenceCategory
         android:iconSpaceReserved="true"
         android:title="Sorting"
+        android:key="sorting"
         tools:ignore="UnusedAttribute">
         <SwitchPreference
             android:defaultValue="false"

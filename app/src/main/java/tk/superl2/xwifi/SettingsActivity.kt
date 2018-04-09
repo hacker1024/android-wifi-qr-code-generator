@@ -1,6 +1,8 @@
 package tk.superl2.xwifi
 
+import android.os.Build
 import android.os.Bundle
+import android.preference.PreferenceCategory
 import android.preference.PreferenceFragment
 import android.preference.PreferenceManager
 import android.support.v7.app.AppCompatActivity
@@ -35,11 +37,15 @@ class SettingsFragment: PreferenceFragment() {
         // Load the preferences from an XML resource
         addPreferencesFromResource(R.xml.preferences)
 
-        findPreference("theme").setOnPreferenceChangeListener { _, newValue ->
-            AppCompatDelegate.setDefaultNightMode(getThemeFromPreferenceString(newValue as String))
-            Toast.makeText(activity.applicationContext, getString(R.string.theme_restart_message), Toast.LENGTH_SHORT).show()
-            activity.recreate()
-            true
+        if (Build.VERSION.SDK_INT >= 21) {
+            findPreference("theme").setOnPreferenceChangeListener { _, newValue ->
+                AppCompatDelegate.setDefaultNightMode(getThemeFromPreferenceString(newValue as String))
+                Toast.makeText(activity.applicationContext, getString(R.string.theme_restart_message), Toast.LENGTH_SHORT).show()
+                activity.recreate()
+                true
+            }
+        } else {
+            (findPreference("display") as PreferenceCategory).removePreference(findPreference("theme"))
         }
     }
 }
