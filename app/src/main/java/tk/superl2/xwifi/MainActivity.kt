@@ -3,6 +3,7 @@ package tk.superl2.xwifi
 import android.Manifest
 import android.app.AlertDialog
 import android.content.Intent
+import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.os.AsyncTask
 import android.os.Build
@@ -34,21 +35,25 @@ class MainActivity: AppCompatActivity() {
     private val wifiEntrySSIDs = ArrayList<String>()
     private lateinit var loadWifiEntriesInBackgroundTask: LoadWifiEntriesInBackground
     private lateinit var qrDialog: AlertDialog
+    private lateinit var prefs: SharedPreferences
 
-    fun sortWifiEntries(ascending: Boolean = true, updateListView: Boolean = false) {
-        if (ascending) {
-            wifiEntries.sortBy { it.title }
-            wifiEntrySSIDs.sort()
-        } else {
-            wifiEntries.sortByDescending { it.title }
-            wifiEntrySSIDs.sortDescending()
+    fun sortWifiEntries(updateListView: Boolean) {
+        when (prefs.getString("sorting", "alphabetical")) {
+            "alphabetical" -> {
+                wifiEntries.sortWith(compareBy(String.CASE_INSENSITIVE_ORDER, { it.title }))
+                if (!prefs.getBoolean("sorting_order", DEFAULT_SORTING_ORDER)) wifiEntries.reverse()
+            }
         }
-        if (updateListView) (wifi_ListView.adapter as ArrayAdapter<*>).notifyDataSetChanged()
+        if (updateListView) {
+            wifiEntrySSIDs.clear()
+            wifiEntries.mapTo(wifiEntrySSIDs) { it.title }
+            (wifi_ListView.adapter as ArrayAdapter<*>).notifyDataSetChanged()
+        }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         PreferenceManager.setDefaultValues(this, R.xml.preferences, false)
-        val prefs = PreferenceManager.getDefaultSharedPreferences(this)
+        prefs = PreferenceManager.getDefaultSharedPreferences(this)
 
         setThemeFromSharedPrefs(prefs)
         super.onCreate(savedInstanceState)
@@ -146,7 +151,9 @@ class MainActivity: AppCompatActivity() {
 
         override fun doInBackground(vararg params: Unit?) {
             loadWifiEntries()
-            sortWifiEntries(ascending = true)
+            sortWifiEntries(false)
+            wifiEntrySSIDs.clear()
+            wifiEntries.mapTo(wifiEntrySSIDs) { it.title }
         }
 
         override fun onPostExecute(result: Unit?) {
@@ -158,10 +165,8 @@ class MainActivity: AppCompatActivity() {
         private fun loadWifiEntries() {
             Log.v(TAG, "Loading wifi entries...")
             wifiEntries.clear()
-            wifiEntrySSIDs.clear()
             try {
                 wifiEntries.addAll(if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) readOreoFile() else readNonOreoFile())
-                wifiEntries.mapTo(wifiEntrySSIDs) { it.title }
                 Log.v(TAG, "Wifi entries loaded.")
             } catch (e: WifiUnparseableException) {
                 if (!::errorDialogBuilder.isInitialized) {
@@ -200,10 +205,15 @@ class MainActivity: AppCompatActivity() {
         return true
     }
 
-    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
-        return when (item!!.itemId) {
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
             R.id.settingsItem -> {
                 startActivity(Intent(this, SettingsActivity::class.java).putExtra("xposed", false))
+                true
+            }
+            R.id.sortItem -> {
+                prefs.edit().putBoolean("sorting_order", !prefs.getBoolean("sorting_order", DEFAULT_SORTING_ORDER)).apply()
+                sortWifiEntries(true)
                 true
             }
             else -> super.onOptionsItemSelected(item)

@@ -3,10 +3,14 @@
     xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
+        android:id="@+id/sortItem"
+        android:icon="@drawable/ic_compare_arrows_24dp"
+        android:title="@string/item_sort_menu_activity_main"
+        app:showAsAction="ifRoom" />
+    <item
         android:id="@+id/settingsItem"
         android:checkable="false"
         android:icon="@drawable/ic_settings_24dp"
-        android:showAsAction="ifRoom"
         android:title="@string/item_settings_menu_activity_main"
-        app:showAsAction="ifRoom" />
+        app:showAsAction="never" />
 </menu>

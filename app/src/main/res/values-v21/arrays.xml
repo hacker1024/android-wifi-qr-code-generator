@@ -50,4 +50,11 @@
         <item>Dark</item>
         <!--<item>System</item> &lt;!&ndash;Disabled for now. TODO Get system theme working. &ndash;&gt;-->
     </string-array>
+
+    <string-array name="sorting">
+        <item>A-Z</item>
+    </string-array>
+    <string-array name="sorting_values">
+        <item>alphabetical</item>
+    </string-array>
 </resources>
