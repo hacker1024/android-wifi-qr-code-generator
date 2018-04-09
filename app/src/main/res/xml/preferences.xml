@@ -4,7 +4,7 @@
     <PreferenceCategory
         android:iconSpaceReserved="true"
         android:title="Display"
-        tools:ignore="UnusedAttribute" >
+        tools:ignore="UnusedAttribute">
         <ListPreference
             android:defaultValue="Light"
             android:entries="@array/themes"
@@ -27,14 +27,13 @@
         android:iconSpaceReserved="true"
         android:title="Sorting"
         tools:ignore="UnusedAttribute">
-        <ListPreference
-            android:defaultValue="alphabetical"
-            android:entries="@array/sorting"
-            android:entryValues="@array/sorting_values"
+        <SwitchPreference
+            android:defaultValue="false"
             android:icon="@drawable/ic_sort_24dp"
-            android:key="sorting"
-            android:summary="%s"
-            android:title="Sort by" />
+            android:key="case_sensitivity"
+            android:summaryOff="Off"
+            android:summaryOn="On"
+            android:title="Case sensitivity" />
         <SwitchPreference
             android:defaultValue="true"
             android:icon="@drawable/ic_compare_arrows_24dp"

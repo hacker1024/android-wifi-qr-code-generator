@@ -38,12 +38,12 @@ class MainActivity: AppCompatActivity() {
     private lateinit var prefs: SharedPreferences
 
     fun sortWifiEntries(updateListView: Boolean) {
-        when (prefs.getString("sorting", "alphabetical")) {
-            "alphabetical" -> {
-                wifiEntries.sortWith(compareBy(String.CASE_INSENSITIVE_ORDER, { it.title }))
-                if (!prefs.getBoolean("sorting_order", DEFAULT_SORTING_ORDER)) wifiEntries.reverse()
-            }
+        if (prefs.getBoolean("case_sensitivity", DEFAULT_CASE_SENSITIVITY)) {
+            wifiEntries.sortBy { it.title }
+        } else {
+            wifiEntries.sortWith(compareBy(String.CASE_INSENSITIVE_ORDER, { it.title }))
         }
+        if (!prefs.getBoolean("sorting_order", DEFAULT_SORTING_ORDER)) wifiEntries.reverse()
         if (updateListView) {
             wifiEntrySSIDs.clear()
             wifiEntries.mapTo(wifiEntrySSIDs) { it.title }
