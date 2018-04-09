@@ -35,6 +35,17 @@ class MainActivity: AppCompatActivity() {
     private lateinit var loadWifiEntriesInBackgroundTask: LoadWifiEntriesInBackground
     private lateinit var qrDialog: AlertDialog
 
+    fun sortWifiEntries(ascending: Boolean = true, updateListView: Boolean = false) {
+        if (ascending) {
+            wifiEntries.sortBy { it.title }
+            wifiEntrySSIDs.sort()
+        } else {
+            wifiEntries.sortByDescending { it.title }
+            wifiEntrySSIDs.sortDescending()
+        }
+        if (updateListView) (wifi_ListView.adapter as ArrayAdapter<*>).notifyDataSetChanged()
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         PreferenceManager.setDefaultValues(this, R.xml.preferences, false)
         val prefs = PreferenceManager.getDefaultSharedPreferences(this)
@@ -135,6 +146,7 @@ class MainActivity: AppCompatActivity() {
 
         override fun doInBackground(vararg params: Unit?) {
             loadWifiEntries()
+            sortWifiEntries(ascending = true)
         }
 
         override fun onPostExecute(result: Unit?) {
