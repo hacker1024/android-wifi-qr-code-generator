@@ -140,7 +140,7 @@ class XposedModule: IXposedHookLoadPackage {
                                                         .withSsid(selectedAccessPoint.title)
                                                         .withPsk(selectedAccessPoint.password)
                                                         .withAuthentication(selectedAccessPoint.type.asQRCodeAuth()))
-                                                .withSize(prefs.getString("qr_code_resolution", DEFAULT_QR_GENERATION_RESOLUTION).toInt(), prefs.getString("qr_code_resolution", DEFAULT_QR_GENERATION_RESOLUTION).toInt())
+                                                .withSize(prefs.getString("qr_code_resolution", DEFAULT_QR_CODE_RESOLUTION).toInt(), prefs.getString("qr_code_resolution", DEFAULT_QR_CODE_RESOLUTION).toInt())
                                                 .bitmap())
                                     })
                                     builder.setNeutralButton("Settings") { dialog, _ -> dialog.dismiss(); (param.thisObject as Fragment).startActivity(Intent().setComponent(ComponentName("tk.superl2.xwifi", "tk.superl2.xwifi.SettingsActivity")).putExtra("xposed", true)) }

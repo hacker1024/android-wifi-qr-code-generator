@@ -7,7 +7,7 @@ import android.support.v7.app.AppCompatActivity
 import android.support.v7.app.AppCompatDelegate
 import android.widget.Toast
 
-internal const val DEFAULT_QR_GENERATION_RESOLUTION = "300"
+internal const val DEFAULT_QR_CODE_RESOLUTION = "300"
 
 class SettingsActivity: AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
