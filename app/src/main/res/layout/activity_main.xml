@@ -7,11 +7,12 @@
     android:orientation="vertical"
     tools:context=".MainActivity">
 
-    <ListView
-        android:id="@+id/wifi_ListView"
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/wifi_RecyclerView"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1" />
+        android:layout_weight="1"
+        android:scrollbars="vertical" />
 
     <com.mopub.mobileads.MoPubView
         android:id="@+id/adview"
