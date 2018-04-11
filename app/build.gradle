@@ -10,8 +10,8 @@ android {
         applicationId "tk.superl2.xwifi"
         minSdkVersion 14
         targetSdkVersion 27
-        versionCode 2
-        versionName "0.1.1"
+        versionCode 3
+        versionName "0.2.0"
     }
     buildTypes {
         release {
@@ -46,7 +46,7 @@ dependencies {
 //    implementation('com.mopub:mopub-sdk:4.20.0@aar') {
 //        transitive = true
 //    }
-    
+
     // AppLovin
 //    implementation 'com.applovin:applovin-sdk:7.8.6'
 //    implementation 'com.mopub.mediation:applovin:7.8.6.0'
