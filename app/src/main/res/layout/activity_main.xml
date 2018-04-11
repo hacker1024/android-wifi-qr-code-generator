@@ -14,9 +14,10 @@
         android:layout_weight="1"
         android:scrollbars="vertical" />
 
-    <com.mopub.mobileads.MoPubView
-        android:id="@+id/adview"
-        android:layout_width="fill_parent"
-        android:layout_height="50dp"
-        android:layout_weight="0" />
+    <!-- Ads are disabled while my account's getting reviewed. -->
+    <!--<com.mopub.mobileads.MoPubView-->
+        <!--android:id="@+id/adview"-->
+        <!--android:layout_width="fill_parent"-->
+        <!--android:layout_height="50dp"-->
+        <!--android:layout_weight="0" />-->
 </LinearLayout>

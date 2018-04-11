@@ -179,13 +179,14 @@ class MainActivity: AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        // Request permissions
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED || ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED)
-            ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.ACCESS_FINE_LOCATION), PERMISSION_CODE_GROUP_ADS)
-
-        // Initialize ads
-        adview.adUnitId = "a6acc0938ffd4af29f71abce19f035ec"
-        adview.loadAd()
+        // Ads disabled while my acount's getting reviewed
+//        // Request permissions
+//        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED || ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED)
+//            ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.ACCESS_FINE_LOCATION), PERMISSION_CODE_GROUP_ADS)
+//
+//        // Initialize ads
+//        adview.adUnitId = "a6acc0938ffd4af29f71abce19f035ec"
+//        adview.loadAd()
 
         // Set RecyclerView properties
         wifi_RecyclerView.apply {

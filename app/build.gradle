@@ -41,10 +41,12 @@ dependencies {
     implementation 'com.github.kenglxn.QRGen:android:2.4.0'
     implementation 'com.crossbowffs.remotepreferences:remotepreferences:0.5'
 
+    // Ads are disables while my account's under review.
     // START AD SERVICES
-    implementation('com.mopub:mopub-sdk:4.20.0@aar') {
-        transitive = true
-    }
+//    implementation('com.mopub:mopub-sdk:4.20.0@aar') {
+//        transitive = true
+//    }
+    
     // AppLovin
 //    implementation 'com.applovin:applovin-sdk:7.8.6'
 //    implementation 'com.mopub.mediation:applovin:7.8.6.0'
