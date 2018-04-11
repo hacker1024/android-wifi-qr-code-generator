@@ -167,20 +167,20 @@ class MainActivity: AppCompatActivity() {
             wifi_RecyclerView.layoutManager.findViewByPosition(position)?.label?.setTypeface(null, Typeface.BOLD)
             return (wifi_RecyclerView.layoutManager.findViewByPosition(position)?.label?.text ?: " ")[0].toUpperCase().toString()
         }
+        private val animation by lazy {
+            AnimationUtils.loadAnimation(this@MainActivity, R.anim.textview_unbold).apply {
+            setAnimationListener(object: Animation.AnimationListener {
+                override fun onAnimationStart(animation: Animation?) {}
+
+                override fun onAnimationRepeat(animation: Animation?) {}
+
+                override fun onAnimationEnd(animation: Animation?) {
+                    wifi_RecyclerView.layoutManager.findViewByPosition(oldPos)?.label?.setTypeface(null, Typeface.NORMAL)
+                }
+            })
+        }}
         fun unboldOldScrollPosition() {
-            wifi_RecyclerView.layoutManager.findViewByPosition(oldPos)?.label?.let {
-                it.startAnimation(AnimationUtils.loadAnimation(this@MainActivity, R.anim.textview_unbold).apply {
-                    setAnimationListener(object: Animation.AnimationListener {
-                        override fun onAnimationStart(animation: Animation?) {}
-
-                        override fun onAnimationRepeat(animation: Animation?) {}
-
-                        override fun onAnimationEnd(animation: Animation?) {
-                            it.setTypeface(null, Typeface.NORMAL)
-                        }
-                    })
-                })
-            }
+            wifi_RecyclerView.layoutManager.findViewByPosition(oldPos)?.label?.startAnimation(animation)
         }
     }
 
