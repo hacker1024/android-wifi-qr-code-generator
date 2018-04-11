@@ -5,6 +5,7 @@ import android.app.SearchManager
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
+import android.graphics.Typeface
 import android.os.AsyncTask
 import android.os.Build
 import android.os.Bundle
@@ -21,7 +22,10 @@ import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuItem
 import android.view.ViewGroup
+import android.view.animation.Animation
+import android.view.animation.AnimationUtils
 import android.widget.*
+import com.simplecityapps.recyclerview_fastscroll.interfaces.OnFastScrollStateChangeListener
 import com.simplecityapps.recyclerview_fastscroll.views.FastScrollRecyclerView
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.wifi_list_item.view.*
@@ -156,8 +160,28 @@ class MainActivity: AppCompatActivity() {
             }
         }
 
-        override fun getSectionName(position: Int) =
-                (wifi_RecyclerView.layoutManager.findViewByPosition(position)?.label?.text ?: " ")[0].toUpperCase().toString()
+        var oldPos: Int = 0
+        override fun getSectionName(position: Int): String {
+            wifi_RecyclerView.layoutManager.findViewByPosition(oldPos)?.label?.setTypeface(null, Typeface.NORMAL)
+            oldPos = position
+            wifi_RecyclerView.layoutManager.findViewByPosition(position)?.label?.setTypeface(null, Typeface.BOLD)
+            return (wifi_RecyclerView.layoutManager.findViewByPosition(position)?.label?.text ?: " ")[0].toUpperCase().toString()
+        }
+        fun unboldOldScrollPosition() {
+            wifi_RecyclerView.layoutManager.findViewByPosition(oldPos)?.label?.let {
+                it.startAnimation(AnimationUtils.loadAnimation(this@MainActivity, R.anim.textview_unbold).apply {
+                    setAnimationListener(object: Animation.AnimationListener {
+                        override fun onAnimationStart(animation: Animation?) {}
+
+                        override fun onAnimationRepeat(animation: Animation?) {}
+
+                        override fun onAnimationEnd(animation: Animation?) {
+                            it.setTypeface(null, Typeface.NORMAL)
+                        }
+                    })
+                })
+            }
+        }
     }
 
     override fun onBackPressed() {
@@ -193,6 +217,13 @@ class MainActivity: AppCompatActivity() {
             layoutManager = LinearLayoutManager(this@MainActivity)
             adapter = WifiListAdapter()
             addItemDecoration(DividerItemDecoration(context, DividerItemDecoration.VERTICAL))
+            setStateChangeListener(object: OnFastScrollStateChangeListener {
+                override fun onFastScrollStart() {}
+
+                override fun onFastScrollStop() {
+                    (adapter as WifiListAdapter).unboldOldScrollPosition()
+                }
+            })
         }
     }
 
