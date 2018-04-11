@@ -62,6 +62,7 @@ class MainActivity: AppCompatActivity() {
             init {
                 item.setOnClickListener {
                     qrDialog = AlertDialog.Builder(this@MainActivity).apply {
+                        setTitle(wifiEntry.title)
                         setView(ImageView(this@MainActivity).apply {
                             setPadding(0, 0, 0, QR_CODE_DIALOG_BOTTOM_IMAGE_MARGIN)
                             adjustViewBounds = true
