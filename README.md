@@ -8,12 +8,12 @@ Hold a wifi entry to display more details.
 
 ## What I'm working on next (from highest to lowest significance)
 - Bug fixes (always at the top of the list)
-- Sort networks alphabetically
-- An xposed component that adds an option in the stock wifi settings to display the QR code/password
+- ~~Sort networks alphabetically~~ Done.
+- ~~An xposed component that adds an option in the stock wifi settings to display the QR code/password~~ Done.
 - ~~Backport to older android versions~~ Done.
 - An about page
 - ~~Setting to choose the quality of the QR code generated~~ [Done.](https://github.com/hacker1024/android-wifi-qr-code-generator/commit/22a23887bc334000e5c71f66fcbbfda0197d7348)
-- A dark theme
+- ~~A dark theme~~ Done.
 - Make new bugs
 
 ## Possible issues
