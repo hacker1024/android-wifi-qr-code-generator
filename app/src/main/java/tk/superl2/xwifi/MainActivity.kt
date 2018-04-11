@@ -26,6 +26,7 @@ import android.view.MenuItem
 import android.view.ViewGroup
 import android.widget.*
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.wifi_list_item.view.*
 import net.glxn.qrgen.android.QRCode
 import net.glxn.qrgen.core.scheme.Wifi
 
@@ -64,12 +65,35 @@ class MainActivity: AppCompatActivity() {
     // The adapter class for the RecyclerView
     inner class WifiListAdapter: RecyclerView.Adapter<WifiListAdapter.ViewHolder>(), Filterable {
         // The ViewHolder class for the adapter
-        inner class ViewHolder(val item: TextView) : RecyclerView.ViewHolder(item) {
+        inner class ViewHolder(val item: LinearLayout) : RecyclerView.ViewHolder(item) {
             // The WifiEntry object associated with the list item
             lateinit var wifiEntry: WifiEntry
             init {
-                // Set onClick action
-                item.setOnClickListener {
+                fun createAndShowInfoDialog(): Boolean {
+                    qrDialog = AlertDialog.Builder(this@MainActivity).apply {
+                        setMessage(if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                            Html.fromHtml(
+                                    "<b>SSID:</b> ${wifiEntry.title}<br>" +
+                                            if (wifiEntry.password != "") "<b>Password:</b> ${if (wifiEntry.type != WifiEntry.Type.WEP) wifiEntry.password else wifiEntry.password.removePrefix("\"").removeSuffix("\"")}<br>"  else { "" } +
+                                            "<b>Type:</b> ${wifiEntry.type}",
+                                    Html.FROM_HTML_MODE_LEGACY)
+                        } else {
+                            @Suppress("DEPRECATION")
+                            Html.fromHtml(
+                                    "<b>SSID:</b> ${wifiEntry.title}<br>" +
+                                            if (wifiEntry.password != "") "<b>Password:</b> ${if (wifiEntry.type != WifiEntry.Type.WEP) wifiEntry.password else wifiEntry.password.removePrefix("\"").removeSuffix("\"")}<br>"  else { "" } +
+                                            "<b>Type:</b> ${wifiEntry.type}"
+                            )
+                        }
+                        )
+                        setPositiveButton("Done") { dialog, _ -> dialog.dismiss() }
+                    }.create()
+                    qrDialog.show()
+                    return true
+                }
+
+                // Set label onClick action
+                item.label.setOnClickListener {
                     qrDialog = AlertDialog.Builder(this@MainActivity).apply {
                         setTitle(wifiEntry.title)
                         setView(ImageView(this@MainActivity).apply {
@@ -88,40 +112,29 @@ class MainActivity: AppCompatActivity() {
                     }.create()
                     qrDialog.show()
                 }
-                // Set onLongClick action
-                item.setOnLongClickListener {
-                    qrDialog = AlertDialog.Builder(this@MainActivity).apply {
-                        setMessage(if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                            Html.fromHtml(
-                                    "<b>SSID:</b> ${wifiEntry.title ?: "<i>ERROR</i>"}<br>" +
-                                            if (wifiEntry.password != "") "<b>Password:</b> ${if (wifiEntry.type != WifiEntry.Type.WEP) wifiEntry.password else wifiEntry.password.removePrefix("\"").removeSuffix("\"")}<br>"  else { "" } +
-                                            "<b>Type:</b> ${wifiEntry.type ?: "</i>ERROR</i>"}",
-                                    Html.FROM_HTML_MODE_LEGACY)
-                        } else {
-                            @Suppress("DEPRECATION")
-                            Html.fromHtml(
-                                    "<b>SSID:</b> ${wifiEntry.title ?: "<i>ERROR</i>"}<br>" +
-                                            if (wifiEntry.password != "") "<b>Password:</b> ${if (wifiEntry.type != WifiEntry.Type.WEP) wifiEntry.password else wifiEntry.password.removePrefix("\"").removeSuffix("\"")}<br>"  else { "" } +
-                                            "<b>Type:</b> ${wifiEntry.type ?: "</i>ERROR</i>"}"
-                            )
-                        }
-                        )
-                        setPositiveButton("Done") { dialog, _ -> dialog.dismiss() }
-                    }.create()
-                    qrDialog.show()
-                    true
-                }
+                // Set label onLongClick action
+                item.label.setOnLongClickListener { createAndShowInfoDialog() }
+
+                // Set security icon onClick action
+                item.security.setOnClickListener { createAndShowInfoDialog() }
             }
         }
 
         // Creates and returns ViewHolders
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) =
-                ViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.wifi_list_item, parent, false) as TextView)
+                ViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.wifi_list_item, parent, false) as LinearLayout)
 
         // Binds new data to recycled ViewHolders
         override fun onBindViewHolder(holder: ViewHolder, position: Int) {
             holder.wifiEntry = wifiList[position]
-            holder.item.text = holder.wifiEntry.title
+            holder.item.label.text = holder.wifiEntry.title
+            holder.item.security.setImageDrawable(
+                    if (holder.wifiEntry.type == WifiEntry.Type.NONE) {
+                        ContextCompat.getDrawable(this@MainActivity, R.drawable.ic_signal_wifi_4_bar_24dp)
+                    } else {
+                        ContextCompat.getDrawable(this@MainActivity, R.drawable.ic_signal_wifi_4_bar_lock_24dp)
+                    }
+            )
         }
 
         // Returns how many list items there are
