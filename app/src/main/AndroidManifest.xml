@@ -27,7 +27,7 @@
             android:value="Adds an option to share a saved wifi network as a QR code in the system settings" />
         <meta-data
             android:name="xposedminversion"
-            android:value="82" />
+            android:value="53" />
 
         <activity android:name=".MainActivity">
             <intent-filter>
