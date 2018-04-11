@@ -140,7 +140,7 @@ class MainActivity: AppCompatActivity() {
 
         // Returns Filter object
         override fun getFilter() = object: Filter() {
-            // Filters the wifiEntries ArrayList with the qeury from the SearchView, and sets the results.
+            // Filters the wifiEntries ArrayList with the query from the SearchView, and sets the results.
             override fun performFiltering(constraint: CharSequence) =
                     FilterResults().apply {
                         values = ArrayList<WifiEntry>().apply {
