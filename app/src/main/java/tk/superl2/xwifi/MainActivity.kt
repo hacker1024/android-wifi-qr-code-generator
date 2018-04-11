@@ -222,8 +222,9 @@ class MainActivity: AppCompatActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
+        // Ads are diabled while my account's under review
         // Destroy ad view on destroy
-        adview.destroy()
+//        adview.destroy()
     }
 
     // Error dialog builder
