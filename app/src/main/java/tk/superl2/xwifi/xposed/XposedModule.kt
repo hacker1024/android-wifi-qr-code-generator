@@ -36,7 +36,6 @@ private const val MENU_ID_SHOW_PASSWORD = Menu.FIRST + 10
 private const val MENU_ID_SHOW_QR_CODE = Menu.FIRST + 11
 
 class XposedModule: IXposedHookLoadPackage {
-
     override fun handleLoadPackage(lpparam: XC_LoadPackage.LoadPackageParam) {
         // Return if not settings app, or android version is less than nougat
         if (lpparam.packageName != "com.android.settings" || Build.VERSION.SDK_INT < Build.VERSION_CODES.N) return
