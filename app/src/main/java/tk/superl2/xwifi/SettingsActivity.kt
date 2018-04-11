@@ -7,6 +7,7 @@ import android.preference.PreferenceFragment
 import android.preference.PreferenceManager
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.app.AppCompatDelegate
+import android.view.MenuItem
 import android.widget.Toast
 
 internal const val DEFAULT_QR_CODE_RESOLUTION = "300"
@@ -29,6 +30,12 @@ class SettingsActivity: AppCompatActivity() {
         // Display the fragment as the main content. If the xposed boolean stored in the intent is true, show the xposed settings fragment.
         fragmentManager.beginTransaction().replace(android.R.id.content, if (intent.extras.getBoolean("xposed")) XposedSettingsFragment() else SettingsFragment()).commit()
     }
+
+    override fun onOptionsItemSelected(item: MenuItem) =
+            if (item.itemId == android.R.id.home) {
+                finish()
+                true
+            } else super.onOptionsItemSelected(item)
 }
 
 class SettingsFragment: PreferenceFragment() {
