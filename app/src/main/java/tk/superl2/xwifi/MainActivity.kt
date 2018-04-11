@@ -35,15 +35,20 @@ const val PERMISSION_CODE_GROUP_ADS = 0
 internal const val QR_CODE_DIALOG_BOTTOM_IMAGE_MARGIN = 0
 
 class MainActivity: AppCompatActivity() {
-    // This variable holds an ArrayList of WifiEntry objects that each contain a saved wifi SSID and
-    // password. It is updated whenever focus returns to the app (onResume).
-    private val wifiEntries = ArrayList<WifiEntry>()
-    private var wifiList = wifiEntries
-    private lateinit var loadWifiEntriesInBackgroundTask: LoadWifiEntriesInBackground
-    private lateinit var qrDialog: AlertDialog
-    private lateinit var searchView: SearchView
+    // SharedPreferences object
     private lateinit var prefs: SharedPreferences
+    // AsyncTask object to load wifi entries
+    private lateinit var loadWifiEntriesInBackgroundTask: LoadWifiEntriesInBackground
+    // List of saved wifi networks (each network stored in a wifiEntry object)
+    private val wifiEntries = ArrayList<WifiEntry>()
+    // The list of WifiEntry objects used in the RecyclerView.
+    private var wifiList = wifiEntries
+    // The SearchView object
+    private lateinit var searchView: SearchView
+    // The QR dialog object
+    private lateinit var qrDialog: AlertDialog
 
+    // Sorts the list of wifi entries
     fun sortWifiEntries(updateListView: Boolean) {
         if (prefs.getBoolean("case_sensitivity", DEFAULT_CASE_SENSITIVITY)) {
             wifiEntries.sortBy { it.title }
@@ -56,10 +61,14 @@ class MainActivity: AppCompatActivity() {
         }
     }
 
+    // The adapter class for the RecyclerView
     inner class WifiListAdapter: RecyclerView.Adapter<WifiListAdapter.ViewHolder>(), Filterable {
+        // The ViewHolder class for the adapter
         inner class ViewHolder(val item: TextView) : RecyclerView.ViewHolder(item) {
+            // The WifiEntry object associated with the list item
             lateinit var wifiEntry: WifiEntry
             init {
+                // Set onClick action
                 item.setOnClickListener {
                     qrDialog = AlertDialog.Builder(this@MainActivity).apply {
                         setTitle(wifiEntry.title)
@@ -79,6 +88,7 @@ class MainActivity: AppCompatActivity() {
                     }.create()
                     qrDialog.show()
                 }
+                // Set onLongClick action
                 item.setOnLongClickListener {
                     qrDialog = AlertDialog.Builder(this@MainActivity).apply {
                         setMessage(if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
@@ -104,17 +114,22 @@ class MainActivity: AppCompatActivity() {
             }
         }
 
+        // Creates and returns ViewHolders
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) =
                 ViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.wifi_list_item, parent, false) as TextView)
 
+        // Binds new data to recycled ViewHolders
         override fun onBindViewHolder(holder: ViewHolder, position: Int) {
             holder.wifiEntry = wifiList[position]
             holder.item.text = holder.wifiEntry.title
         }
 
+        // Returns how many list items there are
         override fun getItemCount() = wifiList.size
 
+        // Returns Filter object
         override fun getFilter() = object: Filter() {
+            // Filters the wifiEntries ArrayList with the qeury from the SearchView, and sets the results.
             override fun performFiltering(constraint: CharSequence): FilterResults {
                 return FilterResults().apply {
                     values = ArrayList<WifiEntry>().apply {
@@ -123,7 +138,9 @@ class MainActivity: AppCompatActivity() {
                 }
             }
 
+            // Publishes the filtered results
             override fun publishResults(constraint: CharSequence, results: FilterResults) {
+                // If the query string isn't empty, set the RecyclerView data source to the filtered ArrayList
                 wifiList = if (constraint == "") wifiEntries else results.values as ArrayList<WifiEntry>
                 notifyDataSetChanged()
             }
@@ -132,6 +149,7 @@ class MainActivity: AppCompatActivity() {
     }
 
     override fun onBackPressed() {
+        // If the SearchView is collapsed, exit the app. Otherwise, collapse the SearchView.
         if (searchView.isIconified) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) finishAndRemoveTask() else finish()
         } else {
@@ -140,9 +158,11 @@ class MainActivity: AppCompatActivity() {
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        // Initialize the prefs object
         PreferenceManager.setDefaultValues(this, R.xml.preferences, false)
         prefs = PreferenceManager.getDefaultSharedPreferences(this)
 
+        // Set the theme based on the value in the shared preferences (light/dark)
         setThemeFromSharedPrefs(prefs)
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -151,9 +171,11 @@ class MainActivity: AppCompatActivity() {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED || ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED)
             ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.ACCESS_FINE_LOCATION), PERMISSION_CODE_GROUP_ADS)
 
+        // Initialize ads
         adview.adUnitId = "a6acc0938ffd4af29f71abce19f035ec"
         adview.loadAd()
 
+        // Set RecyclerView properties
         wifi_RecyclerView.apply {
             layoutManager = LinearLayoutManager(this@MainActivity)
             adapter = WifiListAdapter()
@@ -168,30 +190,39 @@ class MainActivity: AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
+        // Load wifi entries on resume
         loadWifiEntriesInBackgroundTask = LoadWifiEntriesInBackground()
         loadWifiEntriesInBackgroundTask.execute()
     }
 
     public override fun onPause() {
         super.onPause()
+        // Dismiss error dialog on pause
         if (::errorDialog.isInitialized) errorDialog.dismiss()
+        // Cancel loading task on pause
         loadWifiEntriesInBackgroundTask.cancel(true)
+        // Dismiss loading dialog on pause
         if (::loadingDialog.isInitialized) loadingDialog.dismiss()
+        // Dismiss qr dialog dialog on pause
         if (::qrDialog.isInitialized) qrDialog.dismiss()
     }
 
     override fun onDestroy() {
         super.onDestroy()
+        // Destroy ad view on destroy
         adview.destroy()
     }
 
-    // This task loads the wifi entries in the background, and notifies the list adapter that the data has changed.
+    // Error dialog builder
     private lateinit var errorDialogBuilder: AlertDialog.Builder
+    // Error dialog object
     private lateinit var errorDialog: AlertDialog
+    // Loading dialog object
     private lateinit var loadingDialog: AlertDialog
-
+    // This task loads the wifi entries in the background, and notifies the list adapter that the data has changed.
     private inner class LoadWifiEntriesInBackground: AsyncTask<Unit, Unit, Unit>() {
         override fun onPreExecute() {
+            // Create and show loading dialog
             loadingDialog = AlertDialog.Builder(this@MainActivity).apply {
                 setCancelable(false)
                 setMessage(R.string.wifi_loading_message)
@@ -201,12 +232,15 @@ class MainActivity: AppCompatActivity() {
         }
 
         override fun doInBackground(vararg params: Unit?) {
+            // Load and sort wifi entries
             loadWifiEntries()
             sortWifiEntries(false)
         }
 
         override fun onPostExecute(result: Unit?) {
+            // Update RecyclerView
             wifi_RecyclerView.adapter.notifyDataSetChanged()
+            // Dismiss loading dialog
             loadingDialog.dismiss()
         }
 
@@ -252,6 +286,7 @@ class MainActivity: AppCompatActivity() {
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.menu_activity_main, menu)
 
+        // Set SearchView properties
         (menu.findItem(R.id.app_bar_search).actionView as SearchView).apply {
             searchView = this
             setSearchableInfo((getSystemService(Context.SEARCH_SERVICE) as SearchManager).getSearchableInfo(componentName))
@@ -280,10 +315,12 @@ class MainActivity: AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.settingsItem -> {
+                // Start settings activity
                 startActivity(Intent(this, SettingsActivity::class.java).putExtra("xposed", false))
                 true
             }
             R.id.sortItem -> {
+                // Toggle sorting order
                 prefs.edit().putBoolean("sorting_order", !prefs.getBoolean("sorting_order", DEFAULT_SORTING_ORDER)).apply()
                 sortWifiEntries(true)
                 true

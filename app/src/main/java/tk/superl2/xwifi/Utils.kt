@@ -10,10 +10,12 @@ import android.view.WindowManager
 
 private const val TAG = "Utils"
 
+// Sets the theme based on the value in the shared preferences (light/dark)
 fun setThemeFromSharedPrefs(prefs: SharedPreferences) {
     AppCompatDelegate.setDefaultNightMode(getThemeFromPreferenceString(prefs.getString("theme", "Light")))
 }
 
+// Returns night mode constant from string
 fun getThemeFromPreferenceString(value: String): Int {
     return when (value) {
         "Light" -> AppCompatDelegate.MODE_NIGHT_NO

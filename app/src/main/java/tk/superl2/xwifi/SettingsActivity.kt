@@ -17,6 +17,7 @@ class SettingsActivity: AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         PreferenceManager.setDefaultValues(this, R.xml.preferences, false)
 
+        // Set theme
         if (intent.extras.getBoolean("xposed")) {
             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
         } else {
@@ -25,7 +26,7 @@ class SettingsActivity: AppCompatActivity() {
 
         super.onCreate(savedInstanceState)
 
-        // Display the fragment as the main context
+        // Display the fragment as the main content. If the xposed boolean stored in the intent is true, show the xposed settings fragment.
         fragmentManager.beginTransaction().replace(android.R.id.content, if (intent.extras.getBoolean("xposed")) XposedSettingsFragment() else SettingsFragment()).commit()
     }
 }
@@ -53,6 +54,7 @@ class SettingsFragment: PreferenceFragment() {
 class XposedSettingsFragment: PreferenceFragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        // Load the preferences from an XML resource
         addPreferencesFromResource(R.xml.xposed_preferences)
     }
 }

@@ -38,11 +38,13 @@ private const val MENU_ID_SHOW_QR_CODE = Menu.FIRST + 11
 class XposedModule: IXposedHookLoadPackage {
 
     override fun handleLoadPackage(lpparam: XC_LoadPackage.LoadPackageParam) {
+        // Return if not settings app, or android version is less than nougat
         if (lpparam.packageName != "com.android.settings" || Build.VERSION.SDK_INT < Build.VERSION_CODES.N) return
 
         // com.android.settings.wifi.WifiSettings.onCreateContextMenu(menu: ContextMenu, view: View, info: ContextMenuInfo)
         findAndHookMethod("com.android.settings.wifi.WifiSettings", lpparam.classLoader, "onCreateContextMenu", ContextMenu::class.java, View::class.java, ContextMenu.ContextMenuInfo::class.java, object: XC_MethodHook() {
             override fun afterHookedMethod(param: MethodHookParam) {
+                // Add entries to wifi network context menu
                 if ((param.args[1] as View).tag != null && (param.args[1] as View).tag::class.java == findClass("com.android.settings.wifi.LongPressAccessPointPreference", lpparam.classLoader)) {
                     if (getIntField(getObjectField(param.thisObject, "mSelectedAccessPoint"), "security") != ANDROID_SECURITY_EAP) {
                         (param.args[0] as ContextMenu).add(Menu.NONE, MENU_ID_SHOW_PASSWORD, 0, "Network information")
@@ -57,6 +59,7 @@ class XposedModule: IXposedHookLoadPackage {
         // com.android.settings.wifi.WifiSettings.onContextItemSelected(item: MenuItem)
         findAndHookMethod("com.android.settings.wifi.WifiSettings", lpparam.classLoader, "onContextItemSelected", MenuItem::class.java, object: XC_MethodHook() {
             override fun beforeHookedMethod(param: MethodHookParam) {
+                // This function searches for a saved wifi network, using the given SSID and security type.
                 fun searchForWifiEntry(ssid: String, security: Int, pskType: Int = ANDROID_PSK_UNKNOWN): WifiEntry {
                     Log.v(TAG, "Selected access point: ${getObjectField(param.thisObject, "mSelectedAccessPoint")}")
                     if (getObjectField(getObjectField(param.thisObject, "mSelectedAccessPoint"), "networkId") as Int == -1) {
@@ -82,14 +85,19 @@ class XposedModule: IXposedHookLoadPackage {
 
                 when ((param.args[0] as MenuItem).itemId) {
                     MENU_ID_SHOW_PASSWORD -> {
+                        // Create loading dialog
                         val loadingDialog = AlertDialog.Builder((param.thisObject as Fragment).activity).apply {
                             setCancelable(false)
                             setMessage("Loading...")
                             setView(ProgressBar((param.thisObject as Fragment).activity))
                         }.create()
+                        // Show loading dialog
                         loadingDialog.show()
+                        // Start coroutine
                         launch {
+                            // Search for wifi entry
                             val selectedAccessPoint = searchForWifiEntry(getObjectField(getObjectField(param.thisObject, "mSelectedAccessPoint"), "ssid") as String, getObjectField(getObjectField(param.thisObject, "mSelectedAccessPoint"), "security") as Int)
+                            // Create info dialog
                             AlertDialog.Builder((param.thisObject as Fragment).activity).apply {
                                 setMessage(if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                                     Html.fromHtml(
@@ -113,23 +121,31 @@ class XposedModule: IXposedHookLoadPackage {
                                 }
                                 )
                                 setPositiveButton("Done") { dialog, _ -> dialog.dismiss() }
+                                // Dismiss loading dialog
                                 loadingDialog.dismiss()
+                                // Show info dialog on UI thread
                                 (param.thisObject as Fragment).activity.runOnUiThread { show() }
                             }
                         }
                         param.result = true
                     }
                     MENU_ID_SHOW_QR_CODE -> {
+                        // Create loading dialog
                         val loadingDialog = AlertDialog.Builder((param.thisObject as Fragment).activity).apply {
                             setCancelable(false)
                             setMessage("Loading...")
                             setView(ProgressBar((param.thisObject as Fragment).activity))
                         }.create()
+                        // Show loading dialog
                         loadingDialog.show()
+                        // Start coroutine
                         launch {
                             try {
+                                // Get shared preferences from app
                                 val prefs = RemotePreferences(AndroidAppHelper.currentApplication(), "tk.superl2.xwifi.preferences", "tk.superl2.xwifi_preferences")
+                                // Search for wifi entry
                                 val selectedAccessPoint = searchForWifiEntry(getObjectField(getObjectField(param.thisObject, "mSelectedAccessPoint"), "ssid") as String, getObjectField(getObjectField(param.thisObject, "mSelectedAccessPoint"), "security") as Int)
+                                // Create qr dialog
                                 AlertDialog.Builder((param.thisObject as Fragment).activity).apply {
                                     setTitle(selectedAccessPoint.title)
                                     setView(ImageView((param.thisObject as Fragment).activity).apply {
@@ -145,10 +161,14 @@ class XposedModule: IXposedHookLoadPackage {
                                     })
                                     setNeutralButton("Settings") { dialog, _ -> dialog.dismiss(); (param.thisObject as Fragment).startActivity(Intent().setComponent(ComponentName("tk.superl2.xwifi", "tk.superl2.xwifi.SettingsActivity")).putExtra("xposed", true)) }
                                     setPositiveButton("Done") { dialog, _ -> dialog.dismiss() }
+                                    // Dismiss loading dialog
                                     loadingDialog.dismiss()
+                                    // Show qr dialog on main thread
                                     (param.thisObject as Fragment).activity.runOnUiThread { show() }
                                 }
+                            // Catch a WifiUnparseableException
                             } catch (e: WifiUnparseableException) {
+                                // Create and show error dialog
                                 AlertDialog.Builder((param.thisObject as Fragment).activity).apply {
                                     setCancelable(false)
                                     setTitle("The wifi configuration file cannot be found or parsed!")
