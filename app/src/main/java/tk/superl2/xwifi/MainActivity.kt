@@ -22,6 +22,7 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.ViewGroup
 import android.widget.*
+import com.simplecityapps.recyclerview_fastscroll.views.FastScrollRecyclerView
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.wifi_list_item.view.*
 import net.glxn.qrgen.android.QRCode
@@ -60,7 +61,7 @@ class MainActivity: AppCompatActivity() {
     }
 
     // The adapter class for the RecyclerView
-    inner class WifiListAdapter: RecyclerView.Adapter<WifiListAdapter.ViewHolder>(), Filterable {
+    inner class WifiListAdapter: RecyclerView.Adapter<WifiListAdapter.ViewHolder>(), Filterable, FastScrollRecyclerView.SectionedAdapter {
         // The ViewHolder class for the adapter
         inner class ViewHolder(val item: LinearLayout) : RecyclerView.ViewHolder(item) {
             // The WifiEntry object associated with the list item
@@ -153,8 +154,10 @@ class MainActivity: AppCompatActivity() {
                 wifiList = if (constraint == "") wifiEntries else results.values as ArrayList<WifiEntry>
                 notifyDataSetChanged()
             }
-
         }
+
+        override fun getSectionName(position: Int) =
+                (wifi_RecyclerView.layoutManager.findViewByPosition(position)?.label?.text ?: " ")[0].toUpperCase().toString()
     }
 
     override fun onBackPressed() {

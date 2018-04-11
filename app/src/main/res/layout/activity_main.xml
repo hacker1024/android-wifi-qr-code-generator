@@ -7,17 +7,20 @@
     android:orientation="vertical"
     tools:context=".MainActivity">
 
-    <android.support.v7.widget.RecyclerView
+    <com.simplecityapps.recyclerview_fastscroll.views.FastScrollRecyclerView
         android:id="@+id/wifi_RecyclerView"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:scrollbars="vertical" />
+        app:fastScrollPopupBgColor="?android:attr/textColorAlertDialogListItem"
+        app:fastScrollPopupTextColor="?android:attr/colorBackground"
+        app:fastScrollThumbColor="?android:attr/textColorAlertDialogListItem"
+        app:fastScrollPopupPosition="adjacent"/>
 
     <!-- Ads are disabled while my account's getting reviewed. -->
     <!--<com.mopub.mobileads.MoPubView-->
-        <!--android:id="@+id/adview"-->
-        <!--android:layout_width="fill_parent"-->
-        <!--android:layout_height="50dp"-->
-        <!--android:layout_weight="0" />-->
+    <!--android:id="@+id/adview"-->
+    <!--android:layout_width="fill_parent"-->
+    <!--android:layout_height="50dp"-->
+    <!--android:layout_weight="0" />-->
 </LinearLayout>
