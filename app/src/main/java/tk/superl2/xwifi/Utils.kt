@@ -16,14 +16,13 @@ fun setThemeFromSharedPrefs(prefs: SharedPreferences) {
 }
 
 // Returns night mode constant from string
-fun getThemeFromPreferenceString(value: String): Int {
-    return when (value) {
-        "Light" -> AppCompatDelegate.MODE_NIGHT_NO
-        "Dark" -> AppCompatDelegate.MODE_NIGHT_YES
-        "System" -> AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
-        else -> {
-            Log.w(TAG, "Invalid theme set in shared preferences! Using system theme.")
-            AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
+fun getThemeFromPreferenceString(value: String) =
+        when (value) {
+            "Light" -> AppCompatDelegate.MODE_NIGHT_NO
+            "Dark" -> AppCompatDelegate.MODE_NIGHT_YES
+            "System" -> AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
+            else -> {
+                Log.w(TAG, "Invalid theme set in shared preferences! Using system theme.")
+                AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
+            }
         }
-    }
-}
