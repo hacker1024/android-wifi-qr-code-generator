@@ -8,16 +8,17 @@ Hold a wifi entry to display more details.
 
 ## What I'm working on next (from highest to lowest significance)
 - Bug fixes (always at the top of the list)
-- ~~Sort networks alphabetically~~ Done.
-- ~~An xposed component that adds an option in the stock wifi settings to display the QR code/password~~ Done.
+- ~~Sort networks alphabetically~~ [Done.](https://github.com/hacker1024/android-wifi-qr-code-generator/commit/47ce5bba366925d03e32116bf00604bca248c957)
+- ~~An xposed component that adds an option in the stock wifi settings to display the QR code/password~~ [Done.](https://github.com/hacker1024/android-wifi-qr-code-generator/commit/26b2b0bd84e109945e2eca6e38bbf04a41488c57)
 - ~~Backport to older android versions~~ Done.
-- ~~An about page~~ Done.
+- ~~An about page~~ [Done.](https://github.com/hacker1024/android-wifi-qr-code-generator/commit/764357d4070544c552d3fa91d5010e8276b4c993)
 - ~~Setting to choose the quality of the QR code generated~~ [Done.](https://github.com/hacker1024/android-wifi-qr-code-generator/commit/22a23887bc334000e5c71f66fcbbfda0197d7348)
-- ~~A dark theme~~ Done.
+- ~~A dark theme~~ [Done.](https://github.com/hacker1024/android-wifi-qr-code-generator/commit/c4472e454457927f868a7dadf035d9fb8a2317ac)
 - Make new bugs
 
 ## Possible issues
 I need feedback to see if these are only happening to some people or if they're happening to everyone.
+- The list of network may disapear when returning from the settings screen.
 - ~~WEP networks may cause an error.~~ [Fixed.](https://github.com/hacker1024/android-wifi-qr-code-generator/commit/613c555453f9944d8d772faaa2c6d8c508deca76)
 
 ## Third-party libraries/code
