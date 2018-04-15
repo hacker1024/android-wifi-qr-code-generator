@@ -18,4 +18,9 @@
         android:icon="@drawable/ic_settings_24dp"
         android:title="@string/item_settings_menu_activity_main"
         app:showAsAction="never" />
+    <item
+        android:id="@+id/aboutItem"
+        android:icon="@drawable/ic_info_outline_24dp"
+        android:title="@string/item_about_menu_activity_main"
+        app:showAsAction="never" />
 </menu>

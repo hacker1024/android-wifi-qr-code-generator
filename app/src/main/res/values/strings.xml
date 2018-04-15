@@ -11,4 +11,7 @@
     <string name="item_sort_menu_activity_main">Sort order</string>
     <string name="item_search_menu_activity_main">Search</string>
     <string name="security_type_image_description">Security</string>
+    <string name="item_about_menu_activity_main">About</string>
+    <string name="about_description" >This app allows you to easily view saved wifi network details like SSIDs, passwords, and security types, and share them as QR codes. It\'s also an xposed module that puts shortcuts to do those things right in the system wifi settings. Read the README on github for more information.</string>
+    <string name="title_activity_about">About</string>
 </resources>

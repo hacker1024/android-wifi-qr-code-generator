@@ -4,12 +4,11 @@
     package="tk.superl2.xwifi">
 
     <!-- Ads are disabled while my account's under review. -->
-    <!--<uses-permission android:name="android.permission.INTERNET" />-->
-    <!--<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />-->
-    <!--<uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />-->
-    <!--<uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />-->
-    <!--<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />-->
-
+    <!-- <uses-permission android:name="android.permission.INTERNET" /> -->
+    <!-- <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" /> -->
+    <!-- <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" /> -->
+    <!-- <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" /> -->
+    <!-- <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" /> -->
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -17,7 +16,6 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-
         <meta-data
             android:name="xposedmodule"
             android:value="true" />
@@ -34,43 +32,51 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+
             <meta-data
                 android:name="android.app.searchable"
                 android:resource="@xml/searchable" />
         </activity>
         <activity
             android:name=".SettingsActivity"
+            android:exported="true"
             android:label="@string/title_activity_settings"
             android:parentActivityName=".MainActivity"
-            tools:ignore="UnusedAttribute"
-            android:exported="true">
+            tools:ignore="UnusedAttribute">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="tk.superl2.xwifi.MainActivity" />
+        </activity>
+        <activity android:name=".AboutActivity"
+            android:label="@string/title_activity_about"
+            android:parentActivityName=".MainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="tk.superl2.xwifi.MainActivity" />
         </activity>
 
         <!-- Ads are diabled while my account's under review. -->
-        <!--<activity-->
-            <!--android:name="com.mopub.common.MoPubBrowser"-->
-            <!--android:configChanges="keyboardHidden|orientation|screenSize" />-->
-        <!--<activity-->
-            <!--android:name="com.mopub.mobileads.MoPubActivity"-->
-            <!--android:configChanges="keyboardHidden|orientation|screenSize" />-->
-        <!--<activity-->
-            <!--android:name="com.mopub.mobileads.MraidActivity"-->
-            <!--android:configChanges="keyboardHidden|orientation|screenSize" />-->
-        <!--<activity-->
-            <!--android:name="com.mopub.mobileads.RewardedMraidActivity"-->
-            <!--android:configChanges="keyboardHidden|orientation|screenSize" />-->
-        <!--<activity-->
-            <!--android:name="com.mopub.mobileads.MraidVideoPlayerActivity"-->
-            <!--android:configChanges="keyboardHidden|orientation|screenSize" />-->
-        <!--<activity-->
-            <!--android:name="com.applovin.adview.AppLovinInterstitialActivity"-->
-            <!--android:configChanges="orientation|screenSize" />-->
-        <!--<activity-->
-            <!--android:name="com.applovin.adview.AppLovinConfirmationActivity"-->
-            <!--android:configChanges="orientation|screenSize" />-->
+        <!-- <activity -->
+        <!-- android:name="com.mopub.common.MoPubBrowser" -->
+        <!-- android:configChanges="keyboardHidden|orientation|screenSize" /> -->
+        <!-- <activity -->
+        <!-- android:name="com.mopub.mobileads.MoPubActivity" -->
+        <!-- android:configChanges="keyboardHidden|orientation|screenSize" /> -->
+        <!-- <activity -->
+        <!-- android:name="com.mopub.mobileads.MraidActivity" -->
+        <!-- android:configChanges="keyboardHidden|orientation|screenSize" /> -->
+        <!-- <activity -->
+        <!-- android:name="com.mopub.mobileads.RewardedMraidActivity" -->
+        <!-- android:configChanges="keyboardHidden|orientation|screenSize" /> -->
+        <!-- <activity -->
+        <!-- android:name="com.mopub.mobileads.MraidVideoPlayerActivity" -->
+        <!-- android:configChanges="keyboardHidden|orientation|screenSize" /> -->
+        <!-- <activity -->
+        <!-- android:name="com.applovin.adview.AppLovinInterstitialActivity" -->
+        <!-- android:configChanges="orientation|screenSize" /> -->
+        <!-- <activity -->
+        <!-- android:name="com.applovin.adview.AppLovinConfirmationActivity" -->
+        <!-- android:configChanges="orientation|screenSize" /> -->
 
         <provider
             android:name=".PreferenceProvider"

@@ -375,6 +375,11 @@ class MainActivity: AppCompatActivity() {
                 sortWifiEntries(false, true)
                 true
             }
+            R.id.aboutItem -> {
+                // Start about activity
+                startActivity(Intent(this, AboutActivity::class.java))
+                true
+            }
             else -> super.onOptionsItemSelected(item)
         }
     }
