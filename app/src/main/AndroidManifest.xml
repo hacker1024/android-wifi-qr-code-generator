@@ -10,8 +10,6 @@
     <!--<uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />-->
     <!--<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />-->
 
-    <!--<uses-sdk tools:overrideLibrary="com.mopub.mobileads, com.mopub.mobileads.banner, com.mopub.mobileads.rewarded_video, com.mopub.mobileads.interstitial, com.mopub.mobileads.native_video, com.mopub.mobileads.native_static, com.mopub.mobileads.base, com.moat.analytics.mobile.mpub" />-->
-
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"

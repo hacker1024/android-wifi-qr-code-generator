@@ -8,7 +8,7 @@ android {
     compileSdkVersion 27
     defaultConfig {
         applicationId "tk.superl2.xwifi"
-        minSdkVersion 14
+        minSdkVersion 16
         targetSdkVersion 27
         versionCode 3
         versionName "0.2.0"
