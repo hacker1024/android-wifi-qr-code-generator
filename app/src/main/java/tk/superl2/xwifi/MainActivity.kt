@@ -18,10 +18,7 @@ import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.text.Html
 import android.util.Log
-import android.view.LayoutInflater
-import android.view.Menu
-import android.view.MenuItem
-import android.view.ViewGroup
+import android.view.*
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
 import android.widget.*
@@ -52,11 +49,19 @@ class MainActivity: AppCompatActivity() {
     private lateinit var qrDialog: AlertDialog
 
     // Sorts the list of wifi entries
-    fun sortWifiEntries(updateListView: Boolean) {
+    fun sortWifiEntries(filterOpenNetworks: Boolean, updateListView: Boolean) {
         if (prefs.getBoolean("case_sensitivity", DEFAULT_CASE_SENSITIVITY)) {
             wifiEntries.sortBy { it.title }
         } else {
             wifiEntries.sortWith(compareBy(String.CASE_INSENSITIVE_ORDER, { it.title }))
+        }
+        if (filterOpenNetworks) {
+            var i = 0
+            while (i != wifiEntries.size) {
+                if (wifiEntries[i].type == WifiEntry.Type.NONE) {
+                    wifiEntries.removeAt(i)
+                } else i++
+            }
         }
         if (!prefs.getBoolean("sorting_order", DEFAULT_SORTING_ORDER)) wifiEntries.reverse()
         if (updateListView) {
@@ -279,7 +284,7 @@ class MainActivity: AppCompatActivity() {
         override fun doInBackground(vararg params: Unit?) {
             // Load and sort wifi entries
             loadWifiEntries()
-            sortWifiEntries(false)
+            sortWifiEntries(!prefs.getBoolean("show_open_networks", DEFAULT_SHOW_OPEN_NETWORKS), false)
         }
 
         override fun onPostExecute(result: Unit?) {
@@ -367,7 +372,7 @@ class MainActivity: AppCompatActivity() {
             R.id.sortItem -> {
                 // Toggle sorting order
                 prefs.edit().putBoolean("sorting_order", !prefs.getBoolean("sorting_order", DEFAULT_SORTING_ORDER)).apply()
-                sortWifiEntries(true)
+                sortWifiEntries(false, true)
                 true
             }
             else -> super.onOptionsItemSelected(item)

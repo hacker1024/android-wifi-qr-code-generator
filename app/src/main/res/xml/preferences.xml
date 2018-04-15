@@ -43,5 +43,12 @@
             android:summaryOff="Descending"
             android:summaryOn="Ascending"
             android:title="Sort order" />
+        <SwitchPreference
+            android:defaultValue="true"
+            android:icon="@drawable/ic_lock_open_24dp"
+            android:key="show_open_networks"
+            android:summaryOff="Networks with no passwords won't show in the list."
+            android:summaryOn="Networks with no passwords will show in the list."
+            android:title="Show open networks" />
     </PreferenceCategory>
 </PreferenceScreen>

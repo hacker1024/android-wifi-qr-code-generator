@@ -13,6 +13,7 @@ import android.widget.Toast
 internal const val DEFAULT_QR_CODE_RESOLUTION = "300"
 internal const val DEFAULT_CASE_SENSITIVITY = false
 internal const val DEFAULT_SORTING_ORDER = true
+internal const val DEFAULT_SHOW_OPEN_NETWORKS = true
 
 class SettingsActivity: AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
