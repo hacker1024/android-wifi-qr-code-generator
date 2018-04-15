@@ -42,6 +42,7 @@ dependencies {
     implementation 'com.github.kenglxn.QRGen:android:2.4.0'
     implementation 'com.crossbowffs.remotepreferences:remotepreferences:0.5'
     implementation 'com.simplecityapps:recyclerview-fastscroll:1.0.17'
+    implementation 'com.github.husaynhakeem:about-page:0.1.1'
 
     // Ads are disables while my account's under review.
     // START AD SERVICES

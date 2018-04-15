@@ -24,6 +24,8 @@ I need feedback to see if these are only happening to some people or if they're 
 - [Parsing](https://github.com/David-Mawer/OreoWifiPasswords/blob/0d146fd34ce424b8a500a441ff2a1293c3355a33/app/src/main/java/com/pithsoftware/wifipasswords/task/TaskLoadWifiEntries.java) and [data management code](https://github.com/David-Mawer/OreoWifiPasswords/blob/ae0d7e7f290345bdf1a2d0742b8da5d25a76807b/app/src/main/java/com/pithsoftware/wifipasswords/pojo/WifiEntry.java) by [David-Mawer](https://github.com/David-Mawer/) has been used, adapted, and converted to Kotlin.
 - [QRGen: a simple QRCode generation api for java built on top ZXING](https://github.com/kenglxn/QRGen)
 - [RecyclerView-FastScroll: A simple `FastScroller` for Android's `RecyclerView`](https://github.com/timusus/RecyclerView-FastScroll)
+- [About Page - Android: An Android library for easily creating an about page for your Android apps.](https://github.com/husaynhakeem/about-page-android)
+
 ## License
 Copyright (C) 2018 hacker1024 (on github.com)
 
