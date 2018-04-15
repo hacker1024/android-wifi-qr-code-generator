@@ -5,13 +5,14 @@ import android.net.Uri
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.preference.PreferenceManager
+import android.support.v7.app.AppCompatDelegate
 import android.view.View
 import husaynhakeem.com.aboutpage.AboutPage
 import husaynhakeem.com.aboutpage.Item
 
 class AboutActivity: AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
-        setThemeFromSharedPrefs(PreferenceManager.getDefaultSharedPreferences(this))
+        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
         super.onCreate(savedInstanceState)
         setContentView(AboutPage(this)
                 .setImage(R.mipmap.ic_launcher)
