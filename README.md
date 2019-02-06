@@ -6,6 +6,13 @@ The app needs root access to read your saved wifi information.<br>
 Tap a wifi entry to display its QR code.<br>
 Hold a wifi entry to display more details.
 
+[<img src="https://play.google.com/intl/en_us/badges/images/generic/en-play-badge.png"
+     alt="Get it on Google Play"
+     height="80">](https://play.google.com/store/apps/details?id=tk.superl2.xwifi)
+[<img src="https://f-droid.org/badge/get-it-on.png"
+     alt="Get it on F-Droid"
+     height="80">](https://f-droid.org/packages/tk.superl2.xwifi/)
+
 ## What I'm working on next (from highest to lowest significance)
 - Bug fixes (always at the top of the list)
 - ~~Sort networks alphabetically~~ [Done.](https://github.com/hacker1024/android-wifi-qr-code-generator/commit/47ce5bba366925d03e32116bf00604bca248c957)
